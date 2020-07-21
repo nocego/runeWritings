@@ -4,4 +4,8 @@
     <string name="appDescription">With this app you can learn runes and transpile texts from runes to letters and the other way around</string>
     <string name="useRunesInsteadOfLetters">Use runes instead of letters</string>
     <string name="titleRunic">"\u16B1\u16A2\u16BE\u16D6 \u16B9\u16B1\u16C1\u16CF\u16C1\u16BE\u16B7\u16CB"</string>
+    <string name="generateUnicodeRunes">generate Unicode Runes</string>
+    <string name="lettersToUnicodeRunes">letters to Unicode runes</string>
+    <string name="descriptionUnicodeActivity">Enter a text with letters to get this text in Unicode for Runes in the logs.</string>
+    <string name="generateUnicode">Generate Unicode</string>
 </resources>
