@@ -3,7 +3,6 @@
     <string name="title">Rune Writings</string>
     <string name="appDescription">Mit dieser App kannst du Runen lernen und Texte von Runen in Buchstaben transpillieren lassen sowie vice versa</string>
     <string name="useRunesInsteadOfLetters">Verwende Runen anstelle von Buchstaben</string>
-    <string name="titleRunic">"\u16B1\u16A2\u16BE\u16D6 \u16B9\u16B1\u16C1\u16CF\u16C1\u16BE\u16B7\u16CB"</string>
     <string name="generateUnicodeRunes">Generiere Unicode Runen</string>
     <string name="lettersToUnicodeRunes">Buchstaben zu Unicode Runen</string>
     <string name="descriptionUnicodeActivity">Gib einen Text in Buchstaben ein um ihn in Unicode für Runen in den Logs zu erhalten.</string>
