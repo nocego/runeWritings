@@ -4,20 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.rule.ActivityTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.rule.ActivityTestRule
 import ch.nocego.runeWritings.runes.LetterToRunes
 import org.junit.Before
-
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Rule
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityInstrumentedtests {
@@ -26,18 +24,13 @@ class MainActivityInstrumentedtests {
     var targetContext: Context = getInstrumentation().targetContext
 
     @get:Rule
-    var activityRule: ActivityTestRule<MainActivity> =
+    var mainActivityRule: ActivityTestRule<MainActivity> =
         ActivityTestRule(MainActivity::class.java, true, false)
 
     @Before
     fun setUp() {
         setDefaultSharedPrefsValues()
-        activityRule.launchActivity(Intent())
-    }
-
-    @Test
-    fun lettersInTitleByDefault() {
-        onView(withId(R.id.mainActivityTitle)).check(matches(withText(R.string.title)))
+        mainActivityRule.launchActivity(Intent())
     }
 
     @Test
@@ -66,21 +59,14 @@ class MainActivityInstrumentedtests {
     }
 
     @Test
-    fun runesInTitleAfterSwitching() {
-        moveSwitch()
-        val runicTranspilation = getRunicTranspilation(R.string.title)
-        onView(withId(R.id.mainActivityTitle)).check(matches(withText(runicTranspilation)))
-    }
-
-    @Test
-    fun runesInUseRunesSwitchByDefault() {
+    fun runesInUseRunesSwitchAfterSwitching() {
         moveSwitch()
         val runicTranspilation = getRunicTranspilation(R.string.useRunes)
         onView(withId(R.id.useRunesSwitch)).check(matches(withText(runicTranspilation)))
     }
 
     @Test
-    fun runesInActivityTitleByDefault() {
+    fun runesInActivityTitleAfterSwitching() {
         moveSwitch()
         val runicTranspilation = getRunicTranspilation(R.string.title)
         onView(withId(R.id.mainActivityTitle)).check(matches(withText(runicTranspilation)))
@@ -94,17 +80,52 @@ class MainActivityInstrumentedtests {
     }
 
     @Test
-    fun runesInButtonGenerateUnicodeRunesByDefault() {
+    fun runesInButtonGenerateUnicodeRunesAfterSwitching() {
         moveSwitch()
         val runicTranspilation = getRunicTranspilation(R.string.generateUnicodeRunes)
         onView(withId(R.id.buttonGenerateUnicodeRunes)).check(matches(withText(runicTranspilation)))
     }
 
     @Test
-    fun runesInButtonRunicAlphabetByDefault() {
+    fun runesInButtonRunicAlphabetAfterSwitching() {
         moveSwitch()
         val runicTranspilation = getRunicTranspilation(R.string.runicAlphabet)
         onView(withId(R.id.buttonRunicAlphabet)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun activityTitleTranspiledToRunesByOnResumeFromRunicAlphabetActivityIfChanged() {
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        val runicTranspilation = getRunicTranspilation(R.string.title)
+        onView(withId(R.id.mainActivityTitle)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun activityTitleNotTranspiledToRunesByOnResumeFromRunicAlphabetActivityIfChanged() {
+        moveSwitch()
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        onView(withId(R.id.mainActivityTitle)).check(matches(withText(R.string.title)))
+    }
+
+    @Test
+    fun useRunesSwitchCheckedByOnResumeFromRunicAlphabetActivityIfChanged() {
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        onView(withId(R.id.useRunesSwitch)).check(matches(isChecked()))
+    }
+
+    @Test
+    fun useRunesNotSwitchCheckedByOnResumeFromRunicAlphabetActivityIfChanged() {
+        moveSwitch()
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        onView(withId(R.id.useRunesSwitch)).check(matches(isNotChecked()))
     }
 
     private fun setDefaultSharedPrefsValues() {
@@ -123,6 +144,4 @@ class MainActivityInstrumentedtests {
         val resourceString = targetContext.getString(resourceId)
         return ltr.getRunesFromText(resourceString)
     }
-
-
 }

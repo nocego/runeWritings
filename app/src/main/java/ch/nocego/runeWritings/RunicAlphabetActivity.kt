@@ -1,40 +1,34 @@
 package ch.nocego.runeWritings
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import android.widget.Switch
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import ch.nocego.runeWritings.contextHolder.ContextHolder
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_runic_alphabet.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class RunicAlphabetActivity : AppCompatActivity() {
 
     var actionbar: ActionBar? = null
     var useRunesSwitch: Switch? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_runic_alphabet)
 
         actionbar = supportActionBar
-        actionbar!!.title = getString(R.string.title).toUpperCase(Locale.ROOT)
-
-        ContextHolder.setContext(this)
+        actionbar!!.title = getString(R.string.runicAlphabet).toUpperCase(Locale.ROOT)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         val item = menu!!.findItem(R.id.useRunesMenuItem)
         item.setActionView(R.layout.switch_layout)
-
 
         val mySwitch = item.actionView.findViewById<Switch>(R.id.useRunesSwitch)
         useRunesSwitch = mySwitch
@@ -51,27 +45,9 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onResume() {
-        super.onResume()
-        useRunesSwitch?.isChecked = getUseRunes()
-    }
-
-    fun generateUnicodeRunesIntent(v: View) {
-        val intent = Intent(this, UnicodeActivity::class.java)
-        startActivity(intent)
-    }
-
-    fun runicAlphabetIntent(v: View) {
-        val intent = Intent(this, RunicAlphabetActivity::class.java)
-        startActivity(intent)
-    }
-
     private fun transpileTexts() {
-        transpileActionBar(R.string.title, actionbar!!)
+        transpileActionBar(R.string.runicAlphabet, actionbar!!)
         transpileText(useRunesSwitch!!, R.string.useRunes)
-        transpileText(mainActivityTitle, R.string.title)
-        transpileText(description, R.string.appDescription)
-        transpileText(buttonGenerateUnicodeRunes, R.string.generateUnicodeRunes)
-        transpileText(buttonRunicAlphabet, R.string.runicAlphabet)
+        transpileText(runicAlphabetActivityTitle, R.string.runicAlphabet)
     }
 }
