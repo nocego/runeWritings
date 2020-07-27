@@ -12,6 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import ch.nocego.runeWritings.contextHolder.ContextHolder
 import ch.nocego.runeWritings.runes.LetterToRunes
+import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -80,34 +81,6 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
         pressButtonRunicAlphabet()
         onView(withId(R.id.useRunesSwitch)).check(matches(isChecked()))
-    }
-
-    @Test
-    fun lettersInRunicAlphabetActivityTitleByDefaultAfterIntent() {
-        mainActivityRule.launchActivity(Intent())
-        pressButtonRunicAlphabet()
-        onView(withId(R.id.runicAlphabetActivityTitle)).check(matches(withText(R.string.runicAlphabet)))
-    }
-
-    @Test
-    fun runesInRunicAlphabetActivityTitleAfterSwitchingAfterIntent() {
-        mainActivityRule.launchActivity(Intent())
-        moveSwitch()
-        pressButtonRunicAlphabet()
-        val runicTranspilation = getRunicTranspilation(R.string.runicAlphabet)
-        onView(withId(R.id.runicAlphabetActivityTitle)).check(matches(withText(runicTranspilation)))
-    }
-
-    @Test
-    fun lettersInRunicAlphabetActivityTitleByDefault() {
-        onView(withId(R.id.runicAlphabetActivityTitle)).check(matches(withText(R.string.runicAlphabet)))
-    }
-
-    @Test
-    fun runesInRunicAlphabetActivityTitleAfterSwitching() {
-        moveSwitch()
-        val runicTranspilation = getRunicTranspilation(R.string.runicAlphabet)
-        onView(withId(R.id.runicAlphabetActivityTitle)).check(matches(withText(runicTranspilation)))
     }
 
     private fun setDefaultSharedPrefsValues() {

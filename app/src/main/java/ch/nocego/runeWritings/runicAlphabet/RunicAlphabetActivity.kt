@@ -1,15 +1,16 @@
-package ch.nocego.runeWritings
+package ch.nocego.runeWritings.runicAlphabet
 
 import android.os.Bundle
 import android.view.Menu
+import android.widget.ListView
 import android.widget.Switch
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import ch.nocego.runeWritings.R
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
-import kotlinx.android.synthetic.main.activity_runic_alphabet.*
 import java.util.*
 
 class RunicAlphabetActivity : AppCompatActivity() {
@@ -23,6 +24,9 @@ class RunicAlphabetActivity : AppCompatActivity() {
 
         actionbar = supportActionBar
         actionbar!!.title = getString(R.string.runicAlphabet).toUpperCase(Locale.ROOT)
+
+        val listView = findViewById<ListView>(R.id.runicAlphabetListView)
+        listView.adapter = RunicAlphabetAdapter(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -48,6 +52,5 @@ class RunicAlphabetActivity : AppCompatActivity() {
     private fun transpileTexts() {
         transpileActionBar(R.string.runicAlphabet, actionbar!!)
         transpileText(useRunesSwitch!!, R.string.useRunes)
-        transpileText(runicAlphabetActivityTitle, R.string.runicAlphabet)
     }
 }

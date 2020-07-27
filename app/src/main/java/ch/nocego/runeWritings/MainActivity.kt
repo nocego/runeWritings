@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.contextHolder.ContextHolder
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
+import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
 import kotlinx.android.synthetic.main.activity_main.*
