@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".MainActivity" >
+    android:paddingLeft="10sp"
+    android:paddingRight="10sp"
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/description"
@@ -21,18 +23,6 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainActivityTitle" />
-
-    <Switch
-        android:id="@+id/switchRunes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:onClick="switchRunesToggle"
-        android:text="@string/useRunesInsteadOfLetters"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
 
     <TextView
         android:id="@+id/mainActivityTitle"
@@ -51,10 +41,21 @@
         android:id="@+id/buttonGenerateUnicodeRunes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="72dp"
         android:onClick="generateUnicodeRunesIntent"
         android:text="@string/generateUnicodeRunes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchRunes" />
+        app:layout_constraintTop_toBottomOf="@+id/description" />
+
+    <Button
+        android:id="@+id/buttonRunicAlphabet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="@string/runicAlphabet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonGenerateUnicodeRunes" />
 </androidx.constraintlayout.widget.ConstraintLayout>

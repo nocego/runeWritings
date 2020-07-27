@@ -2,9 +2,10 @@
     <string name="app_name">RuneWritings</string>
     <string name="title">Rune Writings</string>
     <string name="appDescription">With this app you can learn runes and transpile texts from runes to letters and the other way around</string>
-    <string name="useRunesInsteadOfLetters">Use runes instead of letters</string>
     <string name="generateUnicodeRunes">generate Unicode Runes</string>
     <string name="lettersToUnicodeRunes">letters to Unicode runes</string>
     <string name="descriptionUnicodeActivity">Enter a text with letters to get this text in Unicode for Runes in the logs.</string>
     <string name="generateUnicode">Generate Unicode</string>
+    <string name="useRunes">use runes</string>
+    <string name="runicAlphabet">runic alphabet</string>
 </resources>

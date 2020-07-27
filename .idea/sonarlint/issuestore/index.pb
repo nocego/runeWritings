@@ -15,3 +15,9 @@ h
 8app/src/main/java/ch/nocego/runeWritings/MainActivity.kt,3\9\3913bd10dcb5b3c2bb1d202ede207d16107c8f2c
 k
 ;app/src/main/java/ch/nocego/runeWritings/UnicodeActivity.kt,f\6\f66c6c96de7144de7bd3face18af63de557c3a62
+S
+#.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
+o
+?app/src/main/java/ch/nocego/runeWritings/runes/LetterToRunes.kt,6\8\683926d7ab8e831164169ab16eb3fae127eedd1e
+b
+2app/src/main/res/drawable/ic_search_black_24dp.xml,1\b\1b32650ff6da3dd2f1487ab83942e29edad79e86

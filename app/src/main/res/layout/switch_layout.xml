@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+    <Switch
+        android:id="@+id/useRunesSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="5sp"
+        android:paddingTop="20sp"
+        android:paddingEnd="5sp"
+        android:paddingBottom="20sp"
+        android:showText="false"
+        android:text="@string/useRunes"
+        android:textAlignment="gravity"
+        android:textAllCaps="false"
+        android:textStyle="bold" />
+
+</RelativeLayout>

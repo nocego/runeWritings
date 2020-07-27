@@ -41,40 +41,70 @@ class MainActivityInstrumentedtests {
     }
 
     @Test
+    fun lettersInUseRunesSwitchByDefault() {
+        onView(withId(R.id.useRunesSwitch)).check(matches(withText(R.string.useRunes)))
+    }
+
+    @Test
+    fun lettersInActivityTitleByDefault() {
+        onView(withId(R.id.mainActivityTitle)).check(matches(withText(R.string.title)))
+    }
+
+    @Test
     fun lettersInDescriptionByDefault() {
         onView(withId(R.id.description)).check(matches(withText(R.string.appDescription)))
     }
 
     @Test
-    fun lettersInSwitchRunesByDefault() {
-        onView(withId(R.id.switchRunes)).check(matches(withText(R.string.useRunesInsteadOfLetters)))
+    fun lettersInButtonGenerateUnicodeRunesByDefault() {
+        onView(withId(R.id.buttonGenerateUnicodeRunes)).check(matches(withText(R.string.generateUnicodeRunes)))
+    }
+
+    @Test
+    fun lettersInButtonRunicAlphabetByDefault() {
+        onView(withId(R.id.buttonRunicAlphabet)).check(matches(withText(R.string.runicAlphabet)))
     }
 
     @Test
     fun runesInTitleAfterSwitching() {
         moveSwitch()
-        val runicTranspilation = ltr.getRunesFromText(targetContext.getString(R.string.title))
+        val runicTranspilation = getRunicTranspilation(R.string.title)
+        onView(withId(R.id.mainActivityTitle)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun runesInUseRunesSwitchByDefault() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.useRunes)
+        onView(withId(R.id.useRunesSwitch)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun runesInActivityTitleByDefault() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.title)
         onView(withId(R.id.mainActivityTitle)).check(matches(withText(runicTranspilation)))
     }
 
     @Test
     fun runesInDescriptionAfterSwitching() {
         moveSwitch()
-        val runicTranspilation =
-            ltr.getRunesFromText(targetContext.getString(R.string.appDescription))
+        val runicTranspilation = getRunicTranspilation(R.string.appDescription)
         onView(withId(R.id.description)).check(matches(withText(runicTranspilation)))
     }
 
     @Test
-    fun runesInSwitchRunesAfterSwitching() {
+    fun runesInButtonGenerateUnicodeRunesByDefault() {
         moveSwitch()
-        val runicTranspilation =
-            ltr.getRunesFromText(targetContext.getString(R.string.useRunesInsteadOfLetters))
-        onView(withId(R.id.switchRunes)).check(matches(withText(runicTranspilation)))
+        val runicTranspilation = getRunicTranspilation(R.string.generateUnicodeRunes)
+        onView(withId(R.id.buttonGenerateUnicodeRunes)).check(matches(withText(runicTranspilation)))
     }
 
-    private fun moveSwitch() {
-        onView(withId(R.id.switchRunes)).perform(click())
+    @Test
+    fun runesInButtonRunicAlphabetByDefault() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.runicAlphabet)
+        onView(withId(R.id.buttonRunicAlphabet)).check(matches(withText(runicTranspilation)))
     }
 
     private fun setDefaultSharedPrefsValues() {
@@ -84,4 +114,15 @@ class MainActivityInstrumentedtests {
         preferencesEditor.putBoolean("useRunes", false)
         preferencesEditor.commit()
     }
+
+    private fun moveSwitch() {
+        onView(withId(R.id.useRunesSwitch)).perform(click())
+    }
+
+    private fun getRunicTranspilation(resourceId : Int) : String {
+        val resourceString = targetContext.getString(resourceId)
+        return ltr.getRunesFromText(resourceString)
+    }
+
+
 }

@@ -5,8 +5,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
+import android.view.Menu
 import android.view.View
+import android.widget.CompoundButton
+import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import ch.nocego.runeWritings.runes.LetterToRunes
@@ -16,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private val ltr = LetterToRunes()
     var actionbar: ActionBar? = null
-    lateinit var appBarSwitch: MenuItem
+    var useRunesSwitch: Switch? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,16 +26,28 @@ class MainActivity : AppCompatActivity() {
 
         actionbar = supportActionBar
         actionbar!!.title = getText(R.string.title)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        val item = menu!!.findItem(R.id.useRunesMenuItem)
+        item.setActionView(R.layout.switch_layout)
+
+        val mySwitch = item.actionView.findViewById<Switch>(R.id.useRunesSwitch)
+        useRunesSwitch = mySwitch
+        mySwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                val editor = getSharedPrefs().edit()
+                editor.putBoolean("useRunes", useRunesSwitch!!.isChecked)
+                editor.apply()
+                checkRunicTexts()
+            }
+        })
 
         checkSwitch()
         checkRunicTexts()
-    }
 
-    fun switchRunesToggle(v: View) {
-        val editor = getSharedPrefs().edit()
-        editor.putBoolean("useRunes", switchRunes.isChecked)
-        editor.apply()
-        checkRunicTexts()
+        return true
     }
 
     fun generateUnicodeRunesIntent(v: View) {
@@ -47,19 +61,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkSwitch() {
         val switchState = getSharedPrefs().getBoolean("useRunes", false)
-        switchRunes.isChecked = switchState
+        useRunesSwitch!!.isChecked = switchState
     }
 
     private fun checkRunicTexts() {
+        transpileActionBar(R.string.title)
+        transpileText(useRunesSwitch!!, R.string.useRunes)
         transpileText(mainActivityTitle, R.string.title)
         transpileText(description, R.string.appDescription)
-        transpileText(switchRunes, R.string.useRunesInsteadOfLetters)
         transpileText(buttonGenerateUnicodeRunes, R.string.generateUnicodeRunes)
-        transpileActionBar(R.string.title)
+        transpileText(buttonRunicAlphabet, R.string.runicAlphabet)
     }
 
     private fun transpileText(tv: TextView, resourceId: Int) {
-        if(switchRunes.isChecked){
+        if(useRunesSwitch!!.isChecked){
             tv.text = ltr.getRunesFromText(getString(resourceId))
         }else{
             tv.text = getString(resourceId)
@@ -67,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun transpileActionBar(resourceId: Int) {
-        if(switchRunes.isChecked){
+        if(useRunesSwitch!!.isChecked){
             actionbar!!.title = ltr.getRunesFromText(getString(resourceId))
         }else{
             actionbar!!.title = getString(resourceId)
