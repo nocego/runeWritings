@@ -57,11 +57,6 @@ class MainActivity : AppCompatActivity() {
         useRunesSwitch?.isChecked = getUseRunes()
     }
 
-    fun generateUnicodeRunesIntent(v: View) {
-        val intent = Intent(this, UnicodeActivity::class.java)
-        startActivity(intent)
-    }
-
     fun runicAlphabetIntent(v: View) {
         val intent = Intent(this, RunicAlphabetActivity::class.java)
         startActivity(intent)
@@ -72,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         transpileText(useRunesSwitch!!, R.string.useRunes)
         transpileText(mainActivityTitle, R.string.title)
         transpileText(description, R.string.appDescription)
-        transpileText(buttonGenerateUnicodeRunes, R.string.generateUnicodeRunes)
         transpileText(buttonRunicAlphabet, R.string.runicAlphabet)
     }
 }

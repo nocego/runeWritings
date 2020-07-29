@@ -38,25 +38,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/buttonGenerateUnicodeRunes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:onClick="generateUnicodeRunesIntent"
-        android:text="@string/generateUnicodeRunes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
-
-    <Button
         android:id="@+id/buttonRunicAlphabet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="28dp"
         android:onClick="runicAlphabetIntent"
         android:text="@string/runicAlphabet"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonGenerateUnicodeRunes" />
+        app:layout_constraintTop_toBottomOf="@+id/description" />
 </androidx.constraintlayout.widget.ConstraintLayout>
