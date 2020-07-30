@@ -11,44 +11,44 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import ch.nocego.runeWritings.R
+import ch.nocego.runeWritings.runes.LetterToRunes
+import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileRuneOpposite
+import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
 import ch.nocego.runeWritings.runes.Rune
-import ch.nocego.runeWritings.runes.runeInstances.*
 
 class RunicAlphabetAdapter(context: Context) : BaseAdapter() {
 
-    private val mContext: Context
-    private val runes = arrayListOf<Rune>(
-        Ansuz(),
-        Berkanan(),
-        Kaun(0),
-        Dagaz(),
-        Ehwaz(),
-        Fehu(),
-        Gyfu(),
-        Haglaz(),
-        Isaz(),
-        Jeran(0),
-        Kaun(1),
-        Laguz(),
-        Mannaz(),
-        Naudiz(),
-        Odal(),
-        Peord(),
-        Kaun(2),
-        Raido(),
-        Sigel(),
-        Tiwaz(),
-        Ur(),
-        Wynn(0),
-        Wynn(1),
-        Eihwaz(),
-        Jeran(1),
-        Algiz()
-    )
+    private val mContext: Context = context
+    private val ltr: LetterToRunes = LetterToRunes()
 
-    init {
-        mContext = context
-    }
+    private val runes = arrayListOf<Rune>(
+        ltr.getRuneInstanceOfOneChar('A')!!,
+        ltr.getRuneInstanceOfOneChar('B')!!,
+        ltr.getRuneInstanceOfOneChar('C')!!,
+        ltr.getRuneInstanceOfOneChar('D')!!,
+        ltr.getRuneInstanceOfOneChar('E')!!,
+        ltr.getRuneInstanceOfOneChar('F')!!,
+        ltr.getRuneInstanceOfOneChar('G')!!,
+        ltr.getRuneInstanceOfOneChar('H')!!,
+        ltr.getRuneInstanceOfOneChar('I')!!,
+        ltr.getRuneInstanceOfOneChar('J')!!,
+        ltr.getRuneInstanceOfOneChar('K')!!,
+        ltr.getRuneInstanceOfOneChar('L')!!,
+        ltr.getRuneInstanceOfOneChar('M')!!,
+        ltr.getRuneInstanceOfOneChar('N')!!,
+        ltr.getRuneInstanceOfOneChar('O')!!,
+        ltr.getRuneInstanceOfOneChar('P')!!,
+        ltr.getRuneInstanceOfOneChar('Q')!!,
+        ltr.getRuneInstanceOfOneChar('R')!!,
+        ltr.getRuneInstanceOfOneChar('S')!!,
+        ltr.getRuneInstanceOfOneChar('T')!!,
+        ltr.getRuneInstanceOfOneChar('U')!!,
+        ltr.getRuneInstanceOfOneChar('V')!!,
+        ltr.getRuneInstanceOfOneChar('W')!!,
+        ltr.getRuneInstanceOfOneChar('X')!!,
+        ltr.getRuneInstanceOfOneChar('Y')!!,
+        ltr.getRuneInstanceOfOneChar('Z')!!
+    )
 
     // responsible for rendering out each row_main
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -60,16 +60,16 @@ class RunicAlphabetAdapter(context: Context) : BaseAdapter() {
         }
 
         val rowLetter = rowMain.findViewById<TextView>(R.id.rowLetter)
-        rowLetter.text = runes[position].correspondingLetter()
+        transpileText(rowLetter, runes[position].correspondingLetter())
 
         val rowRune = rowMain.findViewById<TextView>(R.id.rowRune)
-        rowRune.text = runes[position].unicodeSymbol()
+        transpileRuneOpposite(rowRune, runes[position].unicodeSymbol())
 
         val rowRuneName = rowMain.findViewById<TextView>(R.id.rowRuneName)
-        rowRuneName.text = runes[position].name()
+        transpileText(rowRuneName, runes[position].name())
 
         val rowDescription = rowMain.findViewById<TextView>(R.id.rowDescriptionText)
-        rowDescription.text = runes[position].description()
+        transpileText(rowDescription, runes[position].description())
 
         rowMain.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
@@ -81,8 +81,8 @@ class RunicAlphabetAdapter(context: Context) : BaseAdapter() {
         return rowMain
     }
 
-    override fun getItem(position: Int): Any {
-        return "TEST STRING"
+    override fun getItem(position: Int): Rune {
+        return runes[position]
     }
 
     override fun getItemId(position: Int): Long {

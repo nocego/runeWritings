@@ -9,7 +9,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.contextHolder.ContextHolder
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
+import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileTextResource
 import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
@@ -64,9 +64,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun transpileTexts() {
         transpileActionBar(R.string.title, actionbar!!)
-        transpileText(useRunesSwitch!!, R.string.useRunes)
-        transpileText(mainActivityTitle, R.string.title)
-        transpileText(description, R.string.appDescription)
-        transpileText(buttonRunicAlphabet, R.string.runicAlphabet)
+        transpileTextResource(useRunesSwitch!!, R.string.useRunes)
+        transpileTextResource(mainActivityTitle, R.string.title)
+        transpileTextResource(description, R.string.appDescription)
+        transpileTextResource(buttonRunicAlphabet, R.string.runicAlphabet)
     }
 }

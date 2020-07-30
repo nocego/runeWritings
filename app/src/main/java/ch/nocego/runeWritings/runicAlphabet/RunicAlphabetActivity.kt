@@ -8,7 +8,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.R
 import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
+import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileTextResource
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
 import java.util.*
@@ -17,6 +17,7 @@ class RunicAlphabetActivity : AppCompatActivity() {
 
     var actionbar: ActionBar? = null
     var useRunesSwitch: Switch? = null
+    private var listView: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +28,7 @@ class RunicAlphabetActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.runicAlphabetListView)
         listView.adapter = RunicAlphabetAdapter(this)
+        this.listView = listView
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -51,6 +53,9 @@ class RunicAlphabetActivity : AppCompatActivity() {
 
     private fun transpileTexts() {
         transpileActionBar(R.string.runicAlphabet, actionbar!!)
-        transpileText(useRunesSwitch!!, R.string.useRunes)
+        transpileTextResource(useRunesSwitch!!, R.string.useRunes)
+
+        val adapter: RunicAlphabetAdapter = listView?.adapter as RunicAlphabetAdapter
+        adapter.notifyDataSetChanged()
     }
 }

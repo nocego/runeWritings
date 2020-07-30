@@ -18,11 +18,27 @@ class ObjectTranspiler {
             }
         }
 
-        fun transpileText(tv: TextView, resourceId: Int) {
+        fun transpileTextResource(tv: TextView, resourceId: Int) {
             if (SharedPrefs.getUseRunes()) {
                 tv.text = ltr.getRunesFromText(getMainContext().getString(resourceId))
             } else {
                 tv.text = getMainContext().getString(resourceId)
+            }
+        }
+
+        fun transpileText(tv: TextView, s: String) {
+            if (SharedPrefs.getUseRunes()) {
+                tv.text = ltr.getRunesFromText(s)
+            } else {
+                tv.text = s
+            }
+        }
+
+        fun transpileRuneOpposite(tv: TextView, unicodeRune: String) {
+            if (SharedPrefs.getUseRunes()) {
+                tv.text = ltr.getUpperCaseTextFromRunes(unicodeRune)
+            } else {
+                tv.text = unicodeRune
             }
         }
     }
