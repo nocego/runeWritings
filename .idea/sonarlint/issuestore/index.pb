@@ -75,7 +75,9 @@ t
 Dapp/src/main/java/ch/nocego/runeWritings/runes/runeInstances/Wynn.kt,b\5\b5362c33641e6253200f6f9e53b869d5c79389c7
 p
 @app/src/main/res/drawable/ic_keyboard_arrow_right_black_24dp.xml,0\6\06fa7a8a695e0cfb5a240b90c3f19eb793262e41
-Y
-)app/src/main/res/layout/activity_main.xml,7\6\76b07e40f24cce093536731477540f12e7da3cb6
-Z
-*app/src/main/res/values-de-rCH/strings.xml,6\c\6c3343bb0e9b3b5b53355961c8d2f871e9ea1bd1
+u
+Eapp/src/main/java/ch/nocego/runeWritings/runicAlphabet/FragmentOne.kt,d\6\d6958423d8c6419f624c119eb09f4bd519af184f
+u
+Eapp/src/main/java/ch/nocego/runeWritings/runicAlphabet/FragmentTwo.kt,3\d\3dd39f59e098bd2fa379f4d6a0528bdbe40ca175
+|
+Lapp/src/main/java/ch/nocego/runeWritings/runicAlphabet/MyViewPagerAdapter.kt,2\d\2d7b420350dab59c4848236db6107cf0af061ba9

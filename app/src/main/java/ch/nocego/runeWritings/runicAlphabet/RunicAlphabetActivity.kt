@@ -2,22 +2,23 @@ package ch.nocego.runeWritings.runicAlphabet
 
 import android.os.Bundle
 import android.view.Menu
-import android.widget.ListView
 import android.widget.Switch
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.R
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileTextResource
-import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
+import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileActionBar
+import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileTextResourceOnTextView
+import ch.nocego.runeWritings.sharedPrefs.SharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
+import kotlinx.android.synthetic.main.activity_runic_alphabet.*
+import kotlinx.android.synthetic.main.further_rune_information.*
 import java.util.*
 
 class RunicAlphabetActivity : AppCompatActivity() {
 
     var actionbar: ActionBar? = null
     var useRunesSwitch: Switch? = null
-    private var listView: ListView? = null
+    var adapter: MyViewPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,9 +27,15 @@ class RunicAlphabetActivity : AppCompatActivity() {
         actionbar = supportActionBar
         actionbar!!.title = getString(R.string.runicAlphabet).toUpperCase(Locale.ROOT)
 
-        val listView = findViewById<ListView>(R.id.runicAlphabetListView)
-        listView.adapter = RunicAlphabetAdapter(this)
-        this.listView = listView
+        val adapter = MyViewPagerAdapter(supportFragmentManager)
+        this.adapter = adapter
+        adapter.addFragment(FragmentRunicAlphabet(), getString(R.string.runicAlphabet))
+        adapter.addFragment(
+            FragmentFurtherRuneInformation(),
+            getString(R.string.furtherInformation)
+        )
+        viewPager.adapter = adapter
+        tabs.setupWithViewPager(viewPager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -39,7 +46,7 @@ class RunicAlphabetActivity : AppCompatActivity() {
         val mySwitch = item.actionView.findViewById<Switch>(R.id.useRunesSwitch)
         useRunesSwitch = mySwitch
         mySwitch.setOnCheckedChangeListener { _, isChecked ->
-            val editor = getSharedPrefs().edit()
+            val editor = SharedPrefs.getSharedPrefs().edit()
             editor.putBoolean("useRunes", isChecked)
             editor.apply()
             transpileTexts()
@@ -53,9 +60,12 @@ class RunicAlphabetActivity : AppCompatActivity() {
 
     private fun transpileTexts() {
         transpileActionBar(R.string.runicAlphabet, actionbar!!)
-        transpileTextResource(useRunesSwitch!!, R.string.useRunes)
+        transpileTextResourceOnTextView(useRunesSwitch!!, R.string.useRunes)
 
-        val adapter: RunicAlphabetAdapter = listView?.adapter as RunicAlphabetAdapter
+        adapter!!.notifyDataSetChanged()
+
+        val adapter: FurtherRuneInformationAdapter =
+            runicAlphabetListView.adapter as FurtherRuneInformationAdapter
         adapter.notifyDataSetChanged()
     }
 }

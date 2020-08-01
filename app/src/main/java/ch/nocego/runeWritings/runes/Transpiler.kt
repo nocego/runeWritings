@@ -6,7 +6,7 @@ import ch.nocego.runeWritings.contextHolder.ContextHolder.Companion.getMainConte
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs
 import java.util.*
 
-class ObjectTranspiler {
+class Transpiler {
     companion object {
         private val ltr = LetterToRunes()
 
@@ -18,7 +18,7 @@ class ObjectTranspiler {
             }
         }
 
-        fun transpileTextResource(tv: TextView, resourceId: Int) {
+        fun transpileTextResourceOnTextView(tv: TextView, resourceId: Int) {
             if (SharedPrefs.getUseRunes()) {
                 tv.text = ltr.getRunesFromText(getMainContext().getString(resourceId))
             } else {
@@ -26,11 +26,19 @@ class ObjectTranspiler {
             }
         }
 
-        fun transpileText(tv: TextView, s: String) {
+        fun transpileTextOnTextView(tv: TextView, s: String) {
             if (SharedPrefs.getUseRunes()) {
                 tv.text = ltr.getRunesFromText(s)
             } else {
                 tv.text = s
+            }
+        }
+
+        fun transpileText(s: String): String {
+            return if (SharedPrefs.getUseRunes()) {
+                ltr.getRunesFromText(s)
+            } else {
+                s
             }
         }
 

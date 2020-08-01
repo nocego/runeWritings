@@ -50,7 +50,7 @@ class MainActivityInstrumentedtests {
 
     @Test
     fun lettersInButtonGenerateUnicodeRunesByDefault() {
-        onView(withId(R.id.buttonGenerateUnicodeRunes)).check(matches(withText(R.string.generateUnicodeRunes)))
+        onView(withId(R.id.buttonRunicAlphabet)).check(matches(withText(R.string.runicAlphabet)))
     }
 
     @Test
@@ -82,8 +82,8 @@ class MainActivityInstrumentedtests {
     @Test
     fun runesInButtonGenerateUnicodeRunesAfterSwitching() {
         moveSwitch()
-        val runicTranspilation = getRunicTranspilation(R.string.generateUnicodeRunes)
-        onView(withId(R.id.buttonGenerateUnicodeRunes)).check(matches(withText(runicTranspilation)))
+        val runicTranspilation = getRunicTranspilation(R.string.runicAlphabet)
+        onView(withId(R.id.buttonRunicAlphabet)).check(matches(withText(runicTranspilation)))
     }
 
     @Test

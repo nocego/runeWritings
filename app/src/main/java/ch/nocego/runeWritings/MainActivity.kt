@@ -8,8 +8,8 @@ import android.widget.Switch
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.contextHolder.ContextHolder
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileActionBar
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileTextResource
+import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileActionBar
+import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileTextResourceOnTextView
 import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
@@ -64,9 +64,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun transpileTexts() {
         transpileActionBar(R.string.title, actionbar!!)
-        transpileTextResource(useRunesSwitch!!, R.string.useRunes)
-        transpileTextResource(mainActivityTitle, R.string.title)
-        transpileTextResource(description, R.string.appDescription)
-        transpileTextResource(buttonRunicAlphabet, R.string.runicAlphabet)
+        transpileTextResourceOnTextView(useRunesSwitch!!, R.string.useRunes)
+        transpileTextResourceOnTextView(mainActivityTitle, R.string.title)
+        transpileTextResourceOnTextView(description, R.string.appDescription)
+        transpileTextResourceOnTextView(buttonRunicAlphabet, R.string.runicAlphabet)
     }
 }

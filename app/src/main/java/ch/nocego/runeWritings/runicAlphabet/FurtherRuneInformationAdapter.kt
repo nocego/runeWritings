@@ -12,11 +12,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import ch.nocego.runeWritings.R
 import ch.nocego.runeWritings.runes.LetterToRunes
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileRuneOpposite
-import ch.nocego.runeWritings.runes.ObjectTranspiler.Companion.transpileText
 import ch.nocego.runeWritings.runes.Rune
+import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileRuneOpposite
+import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileTextOnTextView
 
-class RunicAlphabetAdapter(context: Context) : BaseAdapter() {
+class FurtherRuneInformationAdapter(context: Context) : BaseAdapter() {
 
     private val mContext: Context = context
     private val ltr: LetterToRunes = LetterToRunes()
@@ -60,16 +60,16 @@ class RunicAlphabetAdapter(context: Context) : BaseAdapter() {
         }
 
         val rowLetter = rowMain.findViewById<TextView>(R.id.rowLetter)
-        transpileText(rowLetter, runes[position].correspondingLetter())
+        transpileTextOnTextView(rowLetter, runes[position].correspondingLetter())
 
         val rowRune = rowMain.findViewById<TextView>(R.id.rowRune)
         transpileRuneOpposite(rowRune, runes[position].unicodeSymbol())
 
         val rowRuneName = rowMain.findViewById<TextView>(R.id.rowRuneName)
-        transpileText(rowRuneName, runes[position].name())
+        transpileTextOnTextView(rowRuneName, runes[position].name())
 
         val rowDescription = rowMain.findViewById<TextView>(R.id.rowDescriptionText)
-        transpileText(rowDescription, runes[position].description())
+        transpileTextOnTextView(rowDescription, runes[position].description())
 
         rowMain.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
