@@ -22,7 +22,7 @@ class FragmentFurtherRuneInformation : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val listView = runicAlphabetListView
+        val listView = runicAlphabetFurtherInformationListView
         listView.adapter = FurtherRuneInformationAdapter(this.context!!)
         this.listView = listView
     }

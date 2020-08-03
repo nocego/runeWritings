@@ -65,7 +65,7 @@ class RunicAlphabetActivity : AppCompatActivity() {
         adapter!!.notifyDataSetChanged()
 
         val adapter: FurtherRuneInformationAdapter =
-            runicAlphabetListView.adapter as FurtherRuneInformationAdapter
+            runicAlphabetFurtherInformationListView.adapter as FurtherRuneInformationAdapter
         adapter.notifyDataSetChanged()
     }
 }
