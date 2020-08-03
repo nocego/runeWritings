@@ -26,6 +26,7 @@ class RunicAlphabetActivity : AppCompatActivity() {
 
         actionbar = supportActionBar
         actionbar!!.title = getString(R.string.runicAlphabet).toUpperCase(Locale.ROOT)
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
 
         val adapter = MyViewPagerAdapter(supportFragmentManager)
         this.adapter = adapter
