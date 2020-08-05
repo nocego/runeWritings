@@ -8,8 +8,8 @@ import android.widget.Switch
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.contextHolder.ContextHolder
-import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileActionBar
-import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileTextResourceOnTextView
+import ch.nocego.runeWritings.model.Transpiler.Companion.transpileActionBar
+import ch.nocego.runeWritings.model.Transpiler.Companion.transpileTextResourceOnTextView
 import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes

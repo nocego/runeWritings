@@ -11,7 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
-import ch.nocego.runeWritings.runes.LetterToRunes
+import ch.nocego.runeWritings.model.LetterToRunes
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

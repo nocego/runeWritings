@@ -3,7 +3,7 @@ package ch.nocego.runeWritings.runicAlphabet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import ch.nocego.runeWritings.runes.Transpiler.Companion.transpileText
+import ch.nocego.runeWritings.model.Transpiler.Companion.transpileText
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs
 
 class MyViewPagerAdapter(manager: FragmentManager) :
