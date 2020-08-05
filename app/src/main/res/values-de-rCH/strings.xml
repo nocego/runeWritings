@@ -53,4 +53,5 @@
     <string name="nameAlgiz">Algiz</string>
     <string name="descriptionAlgiz">Die fünfzehnte Rune des älteren Futhark</string>
     <string name="furtherInformation">Weitere Informationen</string>
+    <string name="letterToRuneQuiz">Buchstaben \u2192 Runen</string>
 </resources>

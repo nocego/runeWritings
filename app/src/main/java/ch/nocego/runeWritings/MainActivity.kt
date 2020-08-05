@@ -8,6 +8,7 @@ import android.widget.Switch
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ch.nocego.runeWritings.contextHolder.ContextHolder
+import ch.nocego.runeWritings.letterToRuneQuiz.LetterToRuneQuizActivity
 import ch.nocego.runeWritings.model.Transpiler.Companion.transpileActionBar
 import ch.nocego.runeWritings.model.Transpiler.Companion.transpileTextResourceOnTextView
 import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
@@ -62,11 +63,17 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun letterToRuneQuizIntent(v: View) {
+        val intent = Intent(this, LetterToRuneQuizActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun transpileTexts() {
         transpileActionBar(R.string.title, actionbar!!)
         transpileTextResourceOnTextView(useRunesSwitch!!, R.string.useRunes)
         transpileTextResourceOnTextView(mainActivityTitle, R.string.title)
         transpileTextResourceOnTextView(description, R.string.appDescription)
         transpileTextResourceOnTextView(buttonRunicAlphabet, R.string.runicAlphabet)
+        transpileTextResourceOnTextView(buttonletterToRuneQuiz, R.string.letterToRuneQuiz)
     }
 }
