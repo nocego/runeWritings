@@ -4,9 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginLeft="10sp"
+    android:layout_marginRight="10sp"
     tools:context=".letterToRuneQuiz.LetterToRuneQuizActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
@@ -40,13 +43,78 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:width="98dp"
+            android:backgroundTint="#000000"
             android:ems="10"
+            android:focusableInTouchMode="false"
             android:inputType="textPersonName"
             android:maxLength="1"
             android:maxLines="1"
+            android:textColor="#000000"
             android:textSize="100sp"
             tools:text="M" />
-
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/runicKeyboard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/correctRunesInARow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/correctRunesInARow" />
+
+        <TextView
+            android:id="@+id/correctRunesInARowCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <TextView
+            android:id="@+id/best"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/best" />
+
+        <TextView
+            android:id="@+id/bestSoFar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ch.nocego.runeWritings.keyboards.RunicKeyboard
+        android:id="@+id/runicKeyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </ch.nocego.runeWritings.keyboards.RunicKeyboard>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

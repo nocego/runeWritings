@@ -18,5 +18,15 @@ class SharedPrefs {
         fun getUseRunes(): Boolean {
             return getSharedPrefs().getBoolean("useRunes", false)
         }
+
+        fun getBestLetterToRuneQuiz(): Int {
+            return getSharedPrefs().getInt("bestLetterToRuneQuiz", 0)
+        }
+
+        fun setBestLetterToRuneQuiz(newBest: Int) {
+            val editor = getSharedPrefs().edit()
+            editor.putInt("bestLetterToRuneQuiz", newBest)
+            editor.apply()
+        }
     }
 }

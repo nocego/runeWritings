@@ -54,4 +54,8 @@
     <string name="descriptionAlgiz">The fifteenth rune of the Elder Futhark</string>
     <string name="furtherInformation">Further Information</string>
     <string name="letterToRuneQuiz">Letter \u2192 rune</string>
+    <string name="correctRunesInARow">Correct runes in a row:</string>
+    <string name="best">Best:</string>
+    <string name="delete">Delete</string>
+    <string name="enter">Enter</string>
 </resources>

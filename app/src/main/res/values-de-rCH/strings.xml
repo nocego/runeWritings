@@ -54,4 +54,8 @@
     <string name="descriptionAlgiz">Die fünfzehnte Rune des älteren Futhark</string>
     <string name="furtherInformation">Weitere Informationen</string>
     <string name="letterToRuneQuiz">Buchstaben \u2192 Runen</string>
+    <string name="correctRunesInARow">Richtige Runen in Folge:</string>
+    <string name="best">Rekord:</string>
+    <string name="delete">Löschen</string>
+    <string name="enter">Enter</string>
 </resources>
