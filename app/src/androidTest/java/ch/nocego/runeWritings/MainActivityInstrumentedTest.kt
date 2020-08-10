@@ -35,7 +35,7 @@ class MainActivityInstrumentedtests {
 
     @Test
     fun lettersInUseRunesSwitchByDefault() {
-        onView(withId(R.id.useRunesSwitch)).check(matches(withText(R.string.title)))
+        onView(withId(R.id.useRunesSwitch)).check(matches(withText(R.string.useRunes)))
     }
 
     @Test
