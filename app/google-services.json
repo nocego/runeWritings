@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "162501072703",
+    "firebase_url": "https://runewritings-1b3da.firebaseio.com",
+    "project_id": "runewritings-1b3da",
+    "storage_bucket": "runewritings-1b3da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162501072703:android:1bfba35d82f1b8608c658a",
+        "android_client_info": {
+          "package_name": "ch.nocego.runeWritings"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162501072703-vtr3cd78p79s76orumq0fe4dnbl227b8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG3pApKrtd8_9WGgGikx4tsFt39IOEO2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162501072703-vtr3cd78p79s76orumq0fe4dnbl227b8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
