@@ -100,11 +100,9 @@ l
 <app/src/main/java/ch/nocego/runeWritings/model/Transpiler.kt,b\f\bfff1266d2ddfd12d09ddbada1188f36ee8205d2
 o
 ?app/src/main/java/ch/nocego/runeWritings/model/LetterToRunes.kt,f\0\f0dd7c311b693b0f9d177be09df934187a9dd561
-d
-4app/src/main/res/layout/further_rune_information.xml,a\4\a4bd7aeca87fe66c6c54f8b0a2fa15d4c64cc6c0
-T
-$app/src/main/res/layout/row_main.xml,3\2\323ac4efcff0a0ce72c3bb1b0901cb0b4eedbb33
 …
 Uapp/src/main/java/ch/nocego/runeWritings/letterToRuneQuiz/LetterToRuneQuizActivity.kt,3\b\3b5e4a1773a47d335865a3cba872b010a8db1a03
 s
 Capp/src/main/java/ch/nocego/runeWritings/keyboards/RunicKeyboard.kt,7\a\7a1e83a9501711bb774fd40b66c7dd4eabf97f8e
+‹
+[app/src/androidTest/java/ch/nocego/runeWritings/LetterToRuneQuizActivityInstrumentedTest.kt,c\0\c03dd3e746e4ef993e6e1408fa24723122886158
