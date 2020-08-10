@@ -14,5 +14,5 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          profile: Pixel XL
+          profile: Nexus 6
           script: ./gradlew connectedCheck
