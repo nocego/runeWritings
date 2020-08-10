@@ -2,10 +2,10 @@ name: Deploy to Firebase
 
 on:
   push:
-    branches: [ master ]
+    branches: [ develop ]
 
 jobs:
-  test:
+  instrumentation_tests:
     runs-on: macos-latest
     steps:
       - name: checkout
@@ -18,8 +18,8 @@ jobs:
           profile: Nexus 6
           script: ./gradlew connectedCheck
 
-  build:
-    needs: [test]
+  build_and_deploy_to_firebase:
+    needs: [instrumentation_tests]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
