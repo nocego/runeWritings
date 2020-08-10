@@ -19,6 +19,7 @@ jobs:
           script: ./gradlew connectedCheck
 
   build:
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
