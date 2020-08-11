@@ -106,3 +106,9 @@ s
 Capp/src/main/java/ch/nocego/runeWritings/keyboards/RunicKeyboard.kt,7\a\7a1e83a9501711bb774fd40b66c7dd4eabf97f8e
 ‹
 [app/src/androidTest/java/ch/nocego/runeWritings/LetterToRuneQuizActivityInstrumentedTest.kt,c\0\c03dd3e746e4ef993e6e1408fa24723122886158
+_
+/.github/workflows/run_instrumentation_tests.yml,4\5\45d5e8b558e9037fa167432207df76abe9fa132a
+a
+1.github/workflows/test_and_deploy_to_firebase.yml,3\5\354b8ec6eae011bdc774f3cf3b0fdebb918227a4
+I
+app/firebase/releaseNotes,c\3\c3a1c76d6d18583a24098cb658932c55d74b2e6a
