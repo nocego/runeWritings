@@ -3,9 +3,12 @@ package ch.nocego.runeWritings
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ListAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.test.espresso.Espresso.onData
@@ -21,6 +24,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import ch.nocego.runeWritings.contextHolder.ContextHolder
+import ch.nocego.runeWritings.model.Alphabet
 import ch.nocego.runeWritings.model.LetterToRunes
 import ch.nocego.runeWritings.model.Rune
 import ch.nocego.runeWritings.model.Transpiler.Companion.runeUnicodeByLetter
@@ -35,42 +39,17 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.floor
 
 
 @RunWith(AndroidJUnit4::class)
 class RunicAlphabetActivityInstrumentedtests {
-    lateinit var preferencesEditor: SharedPreferences.Editor
     private val ltr = LetterToRunes()
-    var targetContext: Context = getInstrumentation().targetContext
-    private lateinit var runes: ArrayList<Rune>
-    private val alphabetUpperCase: ArrayList<String> = arrayListOf(
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z"
-    )
+    private val alphabetItemWidthInDp = 70 //50+2*10
+    private var targetContext: Context = getInstrumentation().targetContext
+    private lateinit var preferencesEditor: SharedPreferences.Editor
+    private lateinit var runes: MutableList<Rune>
+    private lateinit var alphabetUpperCaseIterator: Iterator<String>
 
     @get:Rule
     var mainActivityRule: ActivityTestRule<MainActivity> =
@@ -84,37 +63,14 @@ class RunicAlphabetActivityInstrumentedtests {
     fun setUp() {
         ContextHolder.setContext(targetContext)
         setDefaultSharedPrefsValues()
-        runes = arrayListOf(
-            ltr.getRuneInstanceOfOneChar('A')!!,
-            ltr.getRuneInstanceOfOneChar('B')!!,
-            ltr.getRuneInstanceOfOneChar('C')!!,
-            ltr.getRuneInstanceOfOneChar('D')!!,
-            ltr.getRuneInstanceOfOneChar('E')!!,
-            ltr.getRuneInstanceOfOneChar('F')!!,
-            ltr.getRuneInstanceOfOneChar('G')!!,
-            ltr.getRuneInstanceOfOneChar('H')!!,
-            ltr.getRuneInstanceOfOneChar('I')!!,
-            ltr.getRuneInstanceOfOneChar('J')!!,
-            ltr.getRuneInstanceOfOneChar('K')!!,
-            ltr.getRuneInstanceOfOneChar('L')!!,
-            ltr.getRuneInstanceOfOneChar('M')!!,
-            ltr.getRuneInstanceOfOneChar('N')!!,
-            ltr.getRuneInstanceOfOneChar('O')!!,
-            ltr.getRuneInstanceOfOneChar('P')!!,
-            ltr.getRuneInstanceOfOneChar('Q')!!,
-            ltr.getRuneInstanceOfOneChar('R')!!,
-            ltr.getRuneInstanceOfOneChar('S')!!,
-            ltr.getRuneInstanceOfOneChar('T')!!,
-            ltr.getRuneInstanceOfOneChar('U')!!,
-            ltr.getRuneInstanceOfOneChar('V')!!,
-            ltr.getRuneInstanceOfOneChar('W')!!,
-            ltr.getRuneInstanceOfOneChar('X')!!,
-            ltr.getRuneInstanceOfOneChar('Y')!!,
-            ltr.getRuneInstanceOfOneChar('Z')!!
-        )
+        alphabetUpperCaseIterator = Alphabet.alphabetUpperCase().iterator()
+        runes = ArrayList()
+        alphabetUpperCaseIterator.forEach {
+            runes.add(ltr.getRuneInstanceOfOneChar(it.toCharArray()[0])!!)
+        }
+        alphabetUpperCaseIterator = Alphabet.alphabetUpperCase().iterator()
         runicAlphabetActivityRule.launchActivity(Intent())
     }
-
 
     @Test
     fun lettersInUseRunesSwitchByDefaultAfterIntent() {
@@ -233,19 +189,25 @@ class RunicAlphabetActivityInstrumentedtests {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
 
-        for (x in 0..20) {
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
+
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(alphabetUpperCase[x], R.id.rowLetter)
+                    listViewViewContainsStringMatch(Alphabet.alphabetUpperCase()[x], R.id.rowLetter)
                 )
             )
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(alphabetUpperCase[x], x % 20, R.id.rowLetter)
+                    listViewViewContainsStringMatch(
+                        Alphabet.alphabetUpperCase()[x],
+                        x % listViewItemsCanBeScrolledTo,
+                        R.id.rowLetter
+                    )
                 )
             )
         }
@@ -259,7 +221,9 @@ class RunicAlphabetActivityInstrumentedtests {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
 
-        for (x in 0..20) {
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
+
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].unicodeSymbol(), R.id.rowLetter)
@@ -268,12 +232,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         runes[x].unicodeSymbol(),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowLetter
                     )
                 )
@@ -285,20 +249,25 @@ class RunicAlphabetActivityInstrumentedtests {
     fun correctLettersInFirstColumnByDefault() {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(alphabetUpperCase[x], R.id.rowLetter)
+                    listViewViewContainsStringMatch(Alphabet.alphabetUpperCase()[x], R.id.rowLetter)
                 )
             )
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(alphabetUpperCase[x], x % 20, R.id.rowLetter)
+                    listViewViewContainsStringMatch(
+                        Alphabet.alphabetUpperCase()[x],
+                        x % listViewItemsCanBeScrolledTo,
+                        R.id.rowLetter
+                    )
                 )
             )
         }
@@ -309,8 +278,9 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].unicodeSymbol(), R.id.rowLetter)
@@ -319,12 +289,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         runes[x].unicodeSymbol(),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowLetter
                     )
                 )
@@ -338,8 +308,9 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].unicodeSymbol(), R.id.rowRune)
@@ -348,10 +319,14 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(runes[x].unicodeSymbol(), x % 20, R.id.rowRune)
+                    listViewViewContainsStringMatch(
+                        runes[x].unicodeSymbol(),
+                        x % listViewItemsCanBeScrolledTo,
+                        R.id.rowRune
+                    )
                 )
             )
         }
@@ -364,8 +339,9 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
@@ -377,12 +353,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         ltr.getUpperCaseTextFromRunes(runes[x].unicodeSymbol()),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowRune
                     )
                 )
@@ -394,8 +370,9 @@ class RunicAlphabetActivityInstrumentedtests {
     fun correctRunesInSecondColumnByDefault() {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].unicodeSymbol(), R.id.rowRune)
@@ -404,10 +381,14 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(runes[x].unicodeSymbol(), x % 20, R.id.rowRune)
+                    listViewViewContainsStringMatch(
+                        runes[x].unicodeSymbol(),
+                        x % listViewItemsCanBeScrolledTo,
+                        R.id.rowRune
+                    )
                 )
             )
         }
@@ -418,8 +399,9 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
@@ -431,12 +413,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         ltr.getUpperCaseTextFromRunes(runes[x].unicodeSymbol()),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowRune
                     )
                 )
@@ -450,8 +432,9 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].name(), R.id.rowRuneName)
@@ -460,10 +443,14 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(runes[x].name(), x % 20, R.id.rowRuneName)
+                    listViewViewContainsStringMatch(
+                        runes[x].name(),
+                        x % listViewItemsCanBeScrolledTo,
+                        R.id.rowRuneName
+                    )
                 )
             )
         }
@@ -477,8 +464,9 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
@@ -490,12 +478,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         ltr.getRunesFromText(runes[x].name()),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowRuneName
                     )
                 )
@@ -507,8 +495,9 @@ class RunicAlphabetActivityInstrumentedtests {
     fun correctLettersStringRowRuneNameByDefault() {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].name(), R.id.rowRuneName)
@@ -517,10 +506,14 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
-                    listViewViewContainsStringMatch(runes[x].name(), x % 20, R.id.rowRuneName)
+                    listViewViewContainsStringMatch(
+                        runes[x].name(),
+                        x % listViewItemsCanBeScrolledTo,
+                        R.id.rowRuneName
+                    )
                 )
             )
         }
@@ -531,8 +524,9 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
@@ -544,12 +538,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         ltr.getRunesFromText(runes[x].name()),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowRuneName
                     )
                 )
@@ -563,8 +557,9 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].description(), R.id.rowDescriptionText)
@@ -573,12 +568,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         runes[x].description(),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowDescriptionText
                     )
                 )
@@ -594,8 +589,9 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
@@ -607,12 +603,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         ltr.getRunesFromText(runes[x].description()),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowDescriptionText
                     )
                 )
@@ -623,8 +619,9 @@ class RunicAlphabetActivityInstrumentedtests {
     @Test
     fun correctLettersStringRowDescriptionTextByDefault() {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(runes[x].description(), R.id.rowDescriptionText)
@@ -633,12 +630,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         runes[x].description(),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowDescriptionText
                     )
                 )
@@ -651,8 +648,9 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
         Thread.sleep(500)
+        val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
 
-        for (x in 0..20) {
+        for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
@@ -664,12 +662,12 @@ class RunicAlphabetActivityInstrumentedtests {
             mySwipeUp(x)
         }
         //the ones on the bottom which cant be swiped
-        for (x in 21..25) {
+        for (x in listViewItemsCanBeScrolledTo + 1..25) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
                         ltr.getRunesFromText(runes[x].description()),
-                        x % 20,
+                        x % listViewItemsCanBeScrolledTo,
                         R.id.rowDescriptionText
                     )
                 )
@@ -683,266 +681,16 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
 
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "A",
-                    horizontalIndex = 0,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithLetter(
+                        it,
+                        viewId = R.id.alphabetItemLetter
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "B",
-                    horizontalIndex = 1,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "C",
-                    horizontalIndex = 2,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "D",
-                    horizontalIndex = 3,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "E",
-                    horizontalIndex = 4,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "F",
-                    horizontalIndex = 5,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "G",
-                    horizontalIndex = 6,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "H",
-                    horizontalIndex = 0,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "I",
-                    horizontalIndex = 1,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "J",
-                    horizontalIndex = 2,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "K",
-                    horizontalIndex = 3,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "L",
-                    horizontalIndex = 4,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "M",
-                    horizontalIndex = 5,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "N",
-                    horizontalIndex = 0,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "O",
-                    horizontalIndex = 1,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "P",
-                    horizontalIndex = 2,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "Q",
-                    horizontalIndex = 3,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "R",
-                    horizontalIndex = 4,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "S",
-                    horizontalIndex = 5,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "T",
-                    horizontalIndex = 0,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "U",
-                    horizontalIndex = 1,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "V",
-                    horizontalIndex = 2,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "W",
-                    horizontalIndex = 3,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "X",
-                    horizontalIndex = 4,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "Y",
-                    horizontalIndex = 5,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "Z",
-                    horizontalIndex = 6,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
+        }
     }
 
     @Test
@@ -953,531 +701,32 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
 
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("A"),
-                    horizontalIndex = 0,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithRune(
+                        it,
+                        rune = ltr.getRunesFromText(it),
+                        viewId = R.id.alphabetItemLetter
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("B"),
-                    horizontalIndex = 1,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("C"),
-                    horizontalIndex = 2,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("D"),
-                    horizontalIndex = 3,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("E"),
-                    horizontalIndex = 4,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("F"),
-                    horizontalIndex = 5,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("G"),
-                    horizontalIndex = 6,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("H"),
-                    horizontalIndex = 0,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("I"),
-                    horizontalIndex = 1,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("J"),
-                    horizontalIndex = 2,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("K"),
-                    horizontalIndex = 3,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("L"),
-                    horizontalIndex = 4,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("M"),
-                    horizontalIndex = 5,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("N"),
-                    horizontalIndex = 0,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("O"),
-                    horizontalIndex = 1,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("P"),
-                    horizontalIndex = 2,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("Q"),
-                    horizontalIndex = 3,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("R"),
-                    horizontalIndex = 4,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("S"),
-                    horizontalIndex = 5,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("T"),
-                    horizontalIndex = 0,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("U"),
-                    horizontalIndex = 1,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("V"),
-                    horizontalIndex = 2,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("W"),
-                    horizontalIndex = 3,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("X"),
-                    horizontalIndex = 4,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("Y"),
-                    horizontalIndex = 5,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("Z"),
-                    horizontalIndex = 6,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
+        }
     }
 
     @Test
     fun correctLettersAlphabetItemLetterByDefault() {
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "A",
-                    horizontalIndex = 0,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithLetter(
+                        it,
+                        viewId = R.id.alphabetItemLetter
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "B",
-                    horizontalIndex = 1,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "C",
-                    horizontalIndex = 2,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "D",
-                    horizontalIndex = 3,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "E",
-                    horizontalIndex = 4,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "F",
-                    horizontalIndex = 5,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "G",
-                    horizontalIndex = 6,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "H",
-                    horizontalIndex = 0,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "I",
-                    horizontalIndex = 1,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "J",
-                    horizontalIndex = 2,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "K",
-                    horizontalIndex = 3,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "L",
-                    horizontalIndex = 4,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "M",
-                    horizontalIndex = 5,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "N",
-                    horizontalIndex = 0,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "O",
-                    horizontalIndex = 1,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "P",
-                    horizontalIndex = 2,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "Q",
-                    horizontalIndex = 3,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "R",
-                    horizontalIndex = 4,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "S",
-                    horizontalIndex = 5,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "T",
-                    horizontalIndex = 0,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "U",
-                    horizontalIndex = 1,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "V",
-                    horizontalIndex = 2,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "W",
-                    horizontalIndex = 3,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "X",
-                    horizontalIndex = 4,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "Y",
-                    horizontalIndex = 5,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    "Z",
-                    horizontalIndex = 6,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
+        }
     }
 
     @Test
@@ -1485,266 +734,17 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
 
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("A"),
-                    horizontalIndex = 0,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithRune(
+                        it,
+                        rune = ltr.getRunesFromText(it),
+                        viewId = R.id.alphabetItemLetter
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("B"),
-                    horizontalIndex = 1,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("C"),
-                    horizontalIndex = 2,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("D"),
-                    horizontalIndex = 3,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("E"),
-                    horizontalIndex = 4,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("F"),
-                    horizontalIndex = 5,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("G"),
-                    horizontalIndex = 6,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("H"),
-                    horizontalIndex = 0,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("I"),
-                    horizontalIndex = 1,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("J"),
-                    horizontalIndex = 2,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("K"),
-                    horizontalIndex = 3,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("L"),
-                    horizontalIndex = 4,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("M"),
-                    horizontalIndex = 5,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("N"),
-                    horizontalIndex = 0,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("O"),
-                    horizontalIndex = 1,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("P"),
-                    horizontalIndex = 2,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("Q"),
-                    horizontalIndex = 3,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("R"),
-                    horizontalIndex = 4,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("S"),
-                    horizontalIndex = 5,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("T"),
-                    horizontalIndex = 0,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("U"),
-                    horizontalIndex = 1,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("V"),
-                    horizontalIndex = 2,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("W"),
-                    horizontalIndex = 3,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("X"),
-                    horizontalIndex = 4,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("Y"),
-                    horizontalIndex = 5,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getRunesFromText("Z"),
-                    horizontalIndex = 6,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemLetter
-                )
-            )
-        )
+        }
     }
 
     @Test
@@ -1752,268 +752,18 @@ class RunicAlphabetActivityInstrumentedtests {
         mainActivityRule.launchActivity(Intent())
         pressButtonRunicAlphabet()
 
-
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("A"),
-                    horizontalIndex = 0,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithRune(
+                        it,
+                        rune = runeUnicodeByLetter(it),
+                        viewId = R.id.alphabetItemRune
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("B"),
-                    horizontalIndex = 1,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("C"),
-                    horizontalIndex = 2,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("D"),
-                    horizontalIndex = 3,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("E"),
-                    horizontalIndex = 4,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("F"),
-                    horizontalIndex = 5,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("G"),
-                    horizontalIndex = 6,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("H"),
-                    horizontalIndex = 0,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("I"),
-                    horizontalIndex = 1,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("J"),
-                    horizontalIndex = 2,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("K"),
-                    horizontalIndex = 3,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("L"),
-                    horizontalIndex = 4,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("M"),
-                    horizontalIndex = 5,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("N"),
-                    horizontalIndex = 0,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("O"),
-                    horizontalIndex = 1,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("P"),
-                    horizontalIndex = 2,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("Q"),
-                    horizontalIndex = 3,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("R"),
-                    horizontalIndex = 4,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("S"),
-                    horizontalIndex = 5,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("T"),
-                    horizontalIndex = 0,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("U"),
-                    horizontalIndex = 1,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("V"),
-                    horizontalIndex = 2,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("W"),
-                    horizontalIndex = 3,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("X"),
-                    horizontalIndex = 4,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("Y"),
-                    horizontalIndex = 5,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("Z"),
-                    horizontalIndex = 6,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
+        }
     }
 
     @Test
@@ -2024,505 +774,32 @@ class RunicAlphabetActivityInstrumentedtests {
         pressButtonRunicAlphabet()
 
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("A")
-                    ), horizontalIndex = 0, verticalIndex = 0, viewId = R.id.alphabetItemRune
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithLetter(
+                        ltr.getUpperCaseTextFromRunes(runeUnicodeByLetter(it)),
+                        viewId = R.id.alphabetItemRune
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("B")
-                    ), horizontalIndex = 1, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("C")
-                    ), horizontalIndex = 2, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("D")
-                    ), horizontalIndex = 3, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("E")
-                    ), horizontalIndex = 4, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("F")
-                    ), horizontalIndex = 5, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("G")
-                    ), horizontalIndex = 6, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("H")
-                    ), horizontalIndex = 0, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("I")
-                    ), horizontalIndex = 1, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("J")
-                    ), horizontalIndex = 2, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("K")
-                    ), horizontalIndex = 3, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("L")
-                    ), horizontalIndex = 4, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("M")
-                    ), horizontalIndex = 5, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("N")
-                    ), horizontalIndex = 0, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("O")
-                    ), horizontalIndex = 1, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("P")
-                    ), horizontalIndex = 2, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("Q")
-                    ), horizontalIndex = 3, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("R")
-                    ), horizontalIndex = 4, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("S")
-                    ), horizontalIndex = 5, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("T")
-                    ), horizontalIndex = 0, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("U")
-                    ), horizontalIndex = 1, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("V")
-                    ), horizontalIndex = 2, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("W")
-                    ), horizontalIndex = 3, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("X")
-                    ), horizontalIndex = 4, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("Y")
-                    ), horizontalIndex = 5, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("Z")
-                    ), horizontalIndex = 6, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
+        }
     }
 
     @Test
     fun correctRuneAlphabetItemRuneByDefault() {
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("A"),
-                    horizontalIndex = 0,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithRune(
+                        it,
+                        rune = runeUnicodeByLetter(it),
+                        viewId = R.id.alphabetItemRune
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("B"),
-                    horizontalIndex = 1,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("C"),
-                    horizontalIndex = 2,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("D"),
-                    horizontalIndex = 3,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("E"),
-                    horizontalIndex = 4,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("F"),
-                    horizontalIndex = 5,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("G"),
-                    horizontalIndex = 6,
-                    verticalIndex = 0,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("H"),
-                    horizontalIndex = 0,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("I"),
-                    horizontalIndex = 1,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("J"),
-                    horizontalIndex = 2,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("K"),
-                    horizontalIndex = 3,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("L"),
-                    horizontalIndex = 4,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("M"),
-                    horizontalIndex = 5,
-                    verticalIndex = 1,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("N"),
-                    horizontalIndex = 0,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("O"),
-                    horizontalIndex = 1,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("P"),
-                    horizontalIndex = 2,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("Q"),
-                    horizontalIndex = 3,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("R"),
-                    horizontalIndex = 4,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("S"),
-                    horizontalIndex = 5,
-                    verticalIndex = 2,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("T"),
-                    horizontalIndex = 0,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("U"),
-                    horizontalIndex = 1,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("V"),
-                    horizontalIndex = 2,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("W"),
-                    horizontalIndex = 3,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("X"),
-                    horizontalIndex = 4,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("Y"),
-                    horizontalIndex = 5,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    runeUnicodeByLetter("Z"),
-                    horizontalIndex = 6,
-                    verticalIndex = 3,
-                    viewId = R.id.alphabetItemRune
-                )
-            )
-        )
+        }
     }
 
     @Test
@@ -2530,240 +807,16 @@ class RunicAlphabetActivityInstrumentedtests {
         moveSwitch()
 
         val layout: ViewInteraction = onView(withId(R.id.runicAlphabetLinearScrollLayout))
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("A")
-                    ), horizontalIndex = 0, verticalIndex = 0, viewId = R.id.alphabetItemRune
+        alphabetUpperCaseIterator.forEach {
+            layout.check(
+                matches(
+                    alphabetItemTextViewMatchesWithLetter(
+                        ltr.getUpperCaseTextFromRunes(runeUnicodeByLetter(it)),
+                        viewId = R.id.alphabetItemRune
+                    )
                 )
             )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("B")
-                    ), horizontalIndex = 1, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("C")
-                    ), horizontalIndex = 2, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("D")
-                    ), horizontalIndex = 3, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("E")
-                    ), horizontalIndex = 4, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("F")
-                    ), horizontalIndex = 5, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("G")
-                    ), horizontalIndex = 6, verticalIndex = 0, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("H")
-                    ), horizontalIndex = 0, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("I")
-                    ), horizontalIndex = 1, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("J")
-                    ), horizontalIndex = 2, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("K")
-                    ), horizontalIndex = 3, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("L")
-                    ), horizontalIndex = 4, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("M")
-                    ), horizontalIndex = 5, verticalIndex = 1, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("N")
-                    ), horizontalIndex = 0, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("O")
-                    ), horizontalIndex = 1, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("P")
-                    ), horizontalIndex = 2, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("Q")
-                    ), horizontalIndex = 3, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("R")
-                    ), horizontalIndex = 4, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("S")
-                    ), horizontalIndex = 5, verticalIndex = 2, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("T")
-                    ), horizontalIndex = 0, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("U")
-                    ), horizontalIndex = 1, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("V")
-                    ), horizontalIndex = 2, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("W")
-                    ), horizontalIndex = 3, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("X")
-                    ), horizontalIndex = 4, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("Y")
-                    ), horizontalIndex = 5, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
-        layout.check(
-            matches(
-                alphabetItemTextViewMatchesWithText(
-                    ltr.getUpperCaseTextFromRunes(
-                        runeUnicodeByLetter("Z")
-                    ), horizontalIndex = 6, verticalIndex = 3, viewId = R.id.alphabetItemRune
-                )
-            )
-        )
+        }
     }
 
     @Test
@@ -2780,32 +833,9 @@ class RunicAlphabetActivityInstrumentedtests {
 
     @Test
     fun scrollToCorrectListViewItemInFurtherRuneInformation() {
-        checkClickAndScroll(0, 0, 0)
-        checkClickAndScroll(0, 1, 1)
-        checkClickAndScroll(0, 2, 2)
-        checkClickAndScroll(0, 3, 3)
-        checkClickAndScroll(0, 4, 4)
-        checkClickAndScroll(0, 5, 5)
-        checkClickAndScroll(0, 6, 6)
-        checkClickAndScroll(1, 0, 7)
-        checkClickAndScroll(1, 1, 8)
-        checkClickAndScroll(1, 2, 9)
-        checkClickAndScroll(1, 3, 10)
-        checkClickAndScroll(1, 4, 11)
-        checkClickAndScroll(1, 5, 12)
-        checkClickAndScroll(2, 0, 13)
-        checkClickAndScroll(2, 1, 14)
-        checkClickAndScroll(2, 2, 15)
-        checkClickAndScroll(2, 3, 16)
-        checkClickAndScroll(2, 4, 17)
-        checkClickAndScroll(2, 5, 18)
-        checkClickAndScroll(3, 0, 19)
-        checkClickAndScroll(3, 1, 20)
-        checkClickAndScroll(3, 2, 21)
-        checkClickAndScroll(3, 3, 22)
-        checkClickAndScroll(3, 4, 23)
-        checkClickAndScroll(3, 5, 24)
-        checkClickAndScroll(3, 6, 25)
+        alphabetUpperCaseIterator.forEach {
+            checkClickAndScroll(it)
+        }
     }
 
     private fun setDefaultSharedPrefsValues() {
@@ -2952,43 +982,19 @@ class RunicAlphabetActivityInstrumentedtests {
         }
     }
 
-    private fun alphabetItemTextViewMatchesWithText(
-        matchingText: String,
-        verticalIndex: Int,
-        horizontalIndex: Int,
-        viewId: Int
-    ): Matcher<View> {
-        return object : TypeSafeMatcher<View>() {
-
-            override fun describeTo(description: Description) {
-                description.appendText("alphabetItem on $horizontalIndex : $verticalIndex is $matchingText")
-            }
-
-            override fun matchesSafely(item: View?): Boolean {
-                val firstVerticalListView: LinearLayout =
-                    (item as LinearLayout).getChildAt(verticalIndex) as LinearLayout
-                val firstAlphabetItem: View = firstVerticalListView.getChildAt(horizontalIndex)
-                val firstAlphabetItemLetter: TextView =
-                    firstAlphabetItem.findViewById(viewId)
-                val firstAlphabetItemLetterText: String = firstAlphabetItemLetter.text.toString()
-                return firstAlphabetItemLetterText == matchingText
-            }
-
-        }
-    }
-
-    private fun checkClickAndScroll(
-        verticalIndex: Int,
-        horizontalIndex: Int,
-        alphabetIndex: Int
-    ): ViewInteraction {
-        onView(alphabetItemAt(verticalIndex, horizontalIndex)).perform(click())
+    private fun checkClickAndScroll(letter: String): ViewInteraction {
+        onView(
+            alphabetItemAt(
+                letterRowIndex(letter),
+                letterColumnIndex(letter)
+            )
+        ).perform(scrollTo(), click())
         val returnValue: ViewInteraction
-        if (alphabetIndex < 21) {
+        if (letterIndexInAlphabet(letter) <= listViewItemsCanBeScrolledTo()) {
             returnValue = onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
-                        alphabetUpperCase[alphabetIndex],
+                        Alphabet.alphabetUpperCase()[letterIndexInAlphabet(letter)],
                         R.id.rowLetter
                     )
                 )
@@ -2997,8 +1003,8 @@ class RunicAlphabetActivityInstrumentedtests {
             returnValue = onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
                 matches(
                     listViewViewContainsStringMatch(
-                        alphabetUpperCase[alphabetIndex],
-                        alphabetIndex % 20,
+                        Alphabet.alphabetUpperCase()[letterIndexInAlphabet(letter)],
+                        letterIndexInAlphabet(letter) % listViewItemsCanBeScrolledTo(),
                         R.id.rowLetter
                     )
                 )
@@ -3031,5 +1037,160 @@ class RunicAlphabetActivityInstrumentedtests {
                 return parentMatcher.matches(view.parent) && group.getChildAt(childPosition) == view
             }
         }
+    }
+
+    private fun screenHeightInDp(): Float {
+        val displayMetrics: DisplayMetrics = targetContext.resources.displayMetrics
+        val screenHeightInDp: Float = displayMetrics.heightPixels / displayMetrics.density
+        return screenHeightInDp
+    }
+
+    class ViewSizeMatcher(private val expectedWith: Int, private val expectedHeight: Int) :
+        TypeSafeMatcher<View>(View::class.java) {
+
+        override fun describeTo(description: Description) {
+            description.appendText("with SizeMatcher: ")
+            description.appendValue(expectedWith.toString() + "x" + expectedHeight)
+        }
+
+        override fun matchesSafely(target: View): Boolean {
+            val targetWidth = target.width
+            val targetHeight = target.height
+            return targetWidth == expectedWith && targetHeight == expectedHeight
+        }
+
+    }
+
+    private fun listViewItemsCanBeScrolledTo(): Int {
+        val listView: ListView =
+            runicAlphabetActivityRule.activity.findViewById(R.id.runicAlphabetFurtherInformationListView)
+        val itemHeightInDp = getFirstItemHeightOfListViewInDp(listView)
+        val numberOfItems = usableSpaceInDp() / itemHeightInDp
+        val numberOfItemsRounded = floor(numberOfItems)
+        val canBeScrolledTo = 25 - numberOfItemsRounded
+        return canBeScrolledTo.toInt()
+    }
+
+    private fun getFirstItemHeightOfListViewInDp(listView: ListView): Float {
+        val heightInPx = getItemHeightofListView(listView, 1)
+        return convertPixelsToDp(heightInPx.toFloat(), targetContext)
+    }
+
+    private fun getItemHeightofListView(listView: ListView, items: Int): Int {
+        val adapter: ListAdapter = listView.adapter
+        var grossElementHeight = 0
+        val UNBOUNDED = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        for (i in 0 until items) {
+            val childView: View = adapter.getView(i, null, listView)
+            childView.measure(UNBOUNDED, UNBOUNDED)
+            grossElementHeight += childView.measuredHeight
+        }
+        return grossElementHeight
+    }
+
+    private fun convertPixelsToDp(px: Float, context: Context): Float {
+        return px / (context.getResources()
+            .getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
+    private fun actionBarHeightInDp(): Float {
+        val tv = TypedValue()
+        targetContext.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)
+        val actionBarHeight: Int = targetContext.resources.getDimensionPixelSize(tv.resourceId)
+        return convertPixelsToDp(actionBarHeight.toFloat(), targetContext)
+    }
+
+    private fun androidNavBarHeightInDp(): Float {
+        val resourceId =
+            targetContext.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        val androidNavBarHeightInPx = targetContext.resources.getDimensionPixelSize(resourceId)
+        return convertPixelsToDp(androidNavBarHeightInPx.toFloat(), targetContext)
+    }
+
+    private fun usableSpaceInDp(): Float {
+        val screenHeightInDp = screenHeightInDp()
+        val actionBarHeightInDp = actionBarHeightInDp()
+        val androidNavBarHeightInDp = androidNavBarHeightInDp()
+        val tabLayoutHeightInDp = actionBarHeightInDp()
+
+        return screenHeightInDp - actionBarHeightInDp - androidNavBarHeightInDp - tabLayoutHeightInDp
+    }
+
+    private fun alphabetItemTextViewMatchesWithLetter(letter: String, viewId: Int): Matcher<View> {
+        return object : TypeSafeMatcher<View>() {
+
+            override fun describeTo(description: Description) {
+                description.appendText("alphabetItem with $letter can be found on correct location")
+            }
+
+            override fun matchesSafely(item: View?): Boolean {
+                item as LinearLayout
+
+                val correctVerticalListView: LinearLayout =
+                    item.getChildAt(letterRowIndex(letter)) as LinearLayout
+                val correctAlphabetItem: View =
+                    correctVerticalListView.getChildAt(letterColumnIndex(letter))
+                val firstAlphabetItemLetter: TextView =
+                    correctAlphabetItem.findViewById(viewId)
+                val correctAlphabetItemLetterText: String = firstAlphabetItemLetter.text.toString()
+                return correctAlphabetItemLetterText == letter
+            }
+
+        }
+    }
+
+    private fun letterRowIndex(letter: String): Int {
+        return floor(letterIndexInAlphabet(letter).toFloat() / alphabetItemsPerRow()).toInt()
+    }
+
+    private fun letterColumnIndex(letter: String): Int {
+        return letterIndexInAlphabet(letter) % alphabetItemsPerRow()
+    }
+
+    private fun letterIndexInAlphabet(letter: String): Int {
+        return Alphabet.alphabetUpperCase().indexOf(letter)
+    }
+
+    private fun alphabetItemTextViewMatchesWithRune(
+        letter: String,
+        rune: String,
+        viewId: Int
+    ): Matcher<View> {
+        return object : TypeSafeMatcher<View>() {
+
+            override fun describeTo(description: Description) {
+                description.appendText("alphabetItem with $rune can be found on correct location")
+            }
+
+            override fun matchesSafely(item: View?): Boolean {
+                item as LinearLayout
+                val letterIndexInAlphabet: Int = Alphabet.alphabetUpperCase().indexOf(letter)
+                val letterRowIndex: Int =
+                    floor(letterIndexInAlphabet.toFloat() / alphabetItemsPerRow()).toInt()
+                val letterColumnIndex: Int = letterIndexInAlphabet % alphabetItemsPerRow()
+
+                val correctVerticalListView: LinearLayout =
+                    item.getChildAt(letterRowIndex) as LinearLayout
+                val correctAlphabetItem: View =
+                    correctVerticalListView.getChildAt(letterColumnIndex)
+                val firstAlphabetItemLetter: TextView =
+                    correctAlphabetItem.findViewById(viewId)
+                val correctAlphabetItemLetterText: String = firstAlphabetItemLetter.text.toString()
+                return correctAlphabetItemLetterText == rune
+            }
+
+        }
+    }
+
+    private fun alphabetItemsPerRow(): Int {
+        var alphabetItemsPerRow: Int = floor(screenWidthInDp() / alphabetItemWidthInDp).toInt()
+        if (alphabetItemsPerRow > 7) alphabetItemsPerRow = 7
+        return alphabetItemsPerRow
+    }
+
+    private fun screenWidthInDp(): Float {
+        val displayMetrics: DisplayMetrics = targetContext.resources.displayMetrics
+        val screenWidthInDp: Float = displayMetrics.widthPixels / displayMetrics.density
+        return screenWidthInDp
     }
 }

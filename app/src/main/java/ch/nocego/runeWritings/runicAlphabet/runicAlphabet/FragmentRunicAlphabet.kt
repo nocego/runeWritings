@@ -1,6 +1,7 @@
 package ch.nocego.runeWritings.runicAlphabet.runicAlphabet
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +17,13 @@ import ch.nocego.runeWritings.model.Transpiler.Companion.transpileRuneOpposite
 import ch.nocego.runeWritings.model.Transpiler.Companion.transpileTextOnTextView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.fragment_runic_alphabet.*
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class FragmentRunicAlphabet : Fragment() {
+
+    private val alphabetItemWidthInDp = 70 //50+2*10
+    private lateinit var alphabetItems: ArrayList<View>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,32 +35,20 @@ class FragmentRunicAlphabet : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val alphabetItems: ArrayList<View> = ArrayList()
+        alphabetItems = ArrayList()
         Alphabet.alphabetUpperCase()
             .map { letter -> alphabetItems.add(generateAlphabetItem(letter)) }
 
         val linearLayoutVertical: View = runicAlphabetLinearScrollLayout
 
-        (linearLayoutVertical as LinearLayout).addView(
-            generateLinearLayoutHorizontalWithChildren(
-                alphabetItems.take(7)
+        linearLayoutVertical as LinearLayout
+        for (i in 0 until numberOfRows()) {
+            linearLayoutVertical.addView(
+                generateLinearLayoutHorizontalWithChildren(
+                    alphabetItems.drop(i * alphabetItemsPerRow()).take(alphabetItemsPerRow())
+                )
             )
-        )
-        linearLayoutVertical.addView(
-            generateLinearLayoutHorizontalWithChildren(
-                alphabetItems.drop(7).take(6)
-            )
-        )
-        linearLayoutVertical.addView(
-            generateLinearLayoutHorizontalWithChildren(
-                alphabetItems.drop(13).take(6)
-            )
-        )
-        linearLayoutVertical.addView(
-            generateLinearLayoutHorizontalWithChildren(
-                alphabetItems.drop(19)
-            )
-        )
+        }
     }
 
     private fun generateAlphabetItem(value: String): View {
@@ -76,6 +70,24 @@ class FragmentRunicAlphabet : Fragment() {
 
 
         return alphabetItem
+    }
+
+    private fun numberOfRows(): Int {
+        val numberOfLetters: Int = alphabetItems.size
+        val numberOfRows: Int = ceil(numberOfLetters.toDouble() / alphabetItemsPerRow()).toInt()
+        return numberOfRows
+    }
+
+    private fun alphabetItemsPerRow(): Int {
+        var alphabetItemsPerRow: Int = floor(screenWidthInDp() / alphabetItemWidthInDp).toInt()
+        if (alphabetItemsPerRow > 7) alphabetItemsPerRow = 7
+        return alphabetItemsPerRow
+    }
+
+    private fun screenWidthInDp(): Float {
+        val displayMetrics: DisplayMetrics = resources.displayMetrics
+        val screenWidthInDp: Float = displayMetrics.widthPixels / displayMetrics.density
+        return screenWidthInDp
     }
 
     private fun generateLinearLayoutHorizontalWithChildren(alphabetItems: List<View>): LinearLayout {
