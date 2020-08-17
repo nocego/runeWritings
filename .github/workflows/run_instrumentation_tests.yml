@@ -11,7 +11,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Run Instrumentation Tests (reactivecircus)
+      - name: Run Instrumentation Tests Nexus One(reactivecircus)
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -48,8 +48,8 @@ jobs:
       - name: Build debug APK
         run: bash ./gradlew assembleDebug --stacktrace
 
-      - name: Upload APK
+      - name: Upload APK to artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: app
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: rune_writings_app_debug
+          path: app/build/outputs/apk/debug/rune-writings-app-debug.apk

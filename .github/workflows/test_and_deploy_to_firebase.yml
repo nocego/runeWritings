@@ -5,31 +5,73 @@ on:
     branches: [ develop ]
 
 jobs:
-  instrumentation_tests:
+  instrumentation_tests_nexus_one:
+    name: Run Instrumentation Tests on Nexus One
     runs-on: macos-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Run Instrumentation Tests (reactivecircus)
+      - name: Run Instrumentation Tests Nexus One(reactivecircus)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          profile: Nexus One
+          script: ./gradlew connectedCheck
+
+  instrumentation_tests_nexus_6:
+    name: Run Instrumentation Tests on Nexus 6
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Run Instrumentation Tests Nexus 6 (reactivecircus)
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
           profile: Nexus 6
           script: ./gradlew connectedCheck
 
-  build_and_deploy_to_firebase:
-    needs: [instrumentation_tests]
+  create_apk_artifact:
+    name: Build debug-APK and store artifact
+    needs: [instrumentation_tests_nexus_one, instrumentation_tests_nexus_6]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: set up JDK 1.8
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build debug APK
+        run: bash ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK to artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: rune_writings_app_debug
+          path: app/build/outputs/apk/debug/rune-writings-app-debug.apk
+
+  build_and_deploy_to_firebase:
+    name: Build debug-APK and deploy to Firebase
+    needs: [instrumentation_tests_nexus_one, instrumentation_tests_nexus_6, create_apk_artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+
+      - name: set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: build debug 
+
+      - name: build debug
       run: ./gradlew assembleDebug
-    - name: upload artifact to Firebase App Distribution
+
+      - name: upload artifact to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
       with:
         appId: ${{secrets.FIREBASE_APP_ID}}
