@@ -41,8 +41,8 @@ class LetterToRuneQuizActivity : AppCompatActivity() {
 
         randomLetter()
         letterToRuneQuizLetter.text = currentLetter
-        correctRunesInARowCounter.text = " $correctCounter"
-        bestSoFar.text = " ${SharedPrefs.getBestLetterToRuneQuiz()}"
+        correctRunesInARowCounter.text = correctCounter.toString()
+        bestSoFar.text = SharedPrefs.getBestLetterToRuneQuiz().toString()
 
         actionbar = supportActionBar
         actionbar!!.title = getString(R.string.letterToRuneQuiz).toUpperCase(Locale.ROOT)
@@ -139,7 +139,7 @@ class LetterToRuneQuizActivity : AppCompatActivity() {
     private fun saveIfNewBest() {
         if (correctCounter > SharedPrefs.getBestLetterToRuneQuiz()) {
             SharedPrefs.setBestLetterToRuneQuiz(correctCounter)
-            bestSoFar.text = " $correctCounter"
+            bestSoFar.text = correctCounter.toString()
         }
     }
 
@@ -149,7 +149,7 @@ class LetterToRuneQuizActivity : AppCompatActivity() {
     }
 
     private fun updateCorrectRunesInARowView() {
-        correctRunesInARowCounter.text = " $correctCounter"
+        correctRunesInARowCounter.text = correctCounter.toString()
     }
 
     private fun newLetter() {

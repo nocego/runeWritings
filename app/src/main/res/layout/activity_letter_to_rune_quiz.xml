@@ -74,6 +74,13 @@
             android:text="@string/correctRunesInARow" />
 
         <TextView
+            android:id="@+id/space"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=" " />
+
+        <TextView
             android:id="@+id/correctRunesInARowCounter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,6 +105,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/best" />
+
+        <TextView
+            android:id="@+id/space2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=" " />
 
         <TextView
             android:id="@+id/bestSoFar"

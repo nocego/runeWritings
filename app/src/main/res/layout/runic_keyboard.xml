@@ -15,56 +15,64 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16A0" />
+                android:text="\u16A0"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_ur"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16A2" />
+                android:text="\u16A2"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_ansuz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16A8" />
+                android:text="\u16A8"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_raido"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16B1" />
+                android:text="\u16B1"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_kaun"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16B4" />
+                android:text="\u16B4"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_gyfu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16B7" />
+                android:text="\u16B7"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_wynn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16B9" />
+                android:text="\u16B9"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_haglaz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16BA" />
+                android:text="\u16BA"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -78,49 +86,56 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16BE" />
+                android:text="\u16BE"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_isaz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16C1" />
+                android:text="\u16C1"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_jeran"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16C3" />
+                android:text="\u16C3"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_eihwaz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16C7" />
+                android:text="\u16C7"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_peord"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16C8" />
+                android:text="\u16C8"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_algiz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16C9" />
+                android:text="\u16C9"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_sigel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16CB" />
+                android:text="\u16CB"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -134,49 +149,56 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16CF" />
+                android:text="\u16CF"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_berkanan"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16D2" />
+                android:text="\u16D2"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_ehwaz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16D6" />
+                android:text="\u16D6"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_mannaz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16D7" />
+                android:text="\u16D7"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_laguz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16DA" />
+                android:text="\u16DA"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_odal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16DF" />
+                android:text="\u16DF"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/button_dagaz"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="\u16DE" />
+                android:text="\u16DE"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
