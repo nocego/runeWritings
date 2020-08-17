@@ -1,16 +1,21 @@
 package ch.nocego.runeWritings.keyboards
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.inputmethod.InputConnection
-import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.*
 import ch.nocego.runeWritings.R
 import ch.nocego.runeWritings.letterToRuneQuiz.LetterToRuneQuizActivity
+
 
 class RunicKeyboard(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :
     LinearLayout(context, attrs, defStyleAttr), View.OnClickListener {
@@ -18,6 +23,8 @@ class RunicKeyboard(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) 
     constructor(context: Context?) : this(context, null, 0) {}
 
     constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0) {}
+
+    private lateinit var popupWindow: PopupWindow
 
     // keyboard keys (buttons)
     private var mButtonFehu: Button? = null
@@ -54,7 +61,9 @@ class RunicKeyboard(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) 
 
     private var letterToRuneQuizActivity: LetterToRuneQuizActivity? = null
 
-    private fun init(context: Context?, attrs: AttributeSet?) { // initialize buttons
+    @SuppressLint("ClickableViewAccessibility")
+    private fun init(context: Context?, attrs: AttributeSet?) {
+        // initialize buttons
         LayoutInflater.from(context).inflate(R.layout.runic_keyboard, this, true)
         mButtonFehu = findViewById<View>(R.id.button_fehu) as Button
         mButtonUr = findViewById<View>(R.id.button_ur) as Button
@@ -82,58 +91,52 @@ class RunicKeyboard(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) 
         mButtonEnter = findViewById<View>(R.id.button_enter) as Button
 
         // set button click listeners
-        mButtonFehu!!.setOnClickListener(this)
-        mButtonUr!!.setOnClickListener(this)
-        mButtonAnsuz!!.setOnClickListener(this)
-        mButtonRaido!!.setOnClickListener(this)
-        mButtonKaun!!.setOnClickListener(this)
-        mButtonGyfu!!.setOnClickListener(this)
-        mButtonWynn!!.setOnClickListener(this)
-        mButtonHaglaz!!.setOnClickListener(this)
-        mButtonNaudiz!!.setOnClickListener(this)
-        mButtonIsaz!!.setOnClickListener(this)
-        mButtonJeran!!.setOnClickListener(this)
-        mButtonEihwaz!!.setOnClickListener(this)
-        mButtonPeord!!.setOnClickListener(this)
-        mButtonAlgiz!!.setOnClickListener(this)
-        mButtonSigel!!.setOnClickListener(this)
-        mButtonTiwaz!!.setOnClickListener(this)
-        mButtonBerkanan!!.setOnClickListener(this)
-        mButtonEhwaz!!.setOnClickListener(this)
-        mButtonMannaz!!.setOnClickListener(this)
-        mButtonLaguz!!.setOnClickListener(this)
-        mButtonOdal!!.setOnClickListener(this)
-        mButtonDagaz!!.setOnClickListener(this)
         mButtonDelete!!.setOnClickListener(this)
         mButtonEnter!!.setOnClickListener(this)
 
-        // map buttons IDs to input strings
-        keyValues.put(R.id.button_fehu, "\u16A0")
-        keyValues.put(R.id.button_ur, "\u16A2")
-        keyValues.put(R.id.button_ansuz, "\u16A8")
-        keyValues.put(R.id.button_raido, "\u16B1")
-        keyValues.put(R.id.button_kaun, "\u16B4")
-        keyValues.put(R.id.button_gyfu, "\u16B7")
-        keyValues.put(R.id.button_wynn, "\u16B9")
-        keyValues.put(R.id.button_haglaz, "\u16BA")
-        keyValues.put(R.id.button_naudiz, "\u16BE")
-        keyValues.put(R.id.button_isaz, "\u16C1")
-        keyValues.put(R.id.button_jeran, "\u16C3")
-        keyValues.put(R.id.button_eihwaz, "\u16C7")
-        keyValues.put(R.id.button_peord, "\u16C8")
-        keyValues.put(R.id.button_algiz, "\u16C9")
-        keyValues.put(R.id.button_sigel, "\u16CB")
-        keyValues.put(R.id.button_tiwaz, "\u16CF")
-        keyValues.put(R.id.button_berkanan, "\u16D2")
-        keyValues.put(R.id.button_ehwaz, "\u16D6")
-        keyValues.put(R.id.button_mannaz, "\u16D7")
-        keyValues.put(R.id.button_laguz, "\u16DA")
-        keyValues.put(R.id.button_odal, "\u16DF")
-        keyValues.put(R.id.button_dagaz, "\u16DE")
+        val popupView: View =
+            LayoutInflater.from(context).inflate(R.layout.key_popup_menu, FrameLayout(context!!))
+        popupWindow = PopupWindow(context)
+        popupWindow.contentView = popupView
+
+        val touchListener = OnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    showKeyPopup(v)
+                }
+                MotionEvent.ACTION_UP -> {
+                    dismissKeyPopupAndCommitText(v)
+                }
+            }
+            true
+        }
+
+        //set button touch listeners for runes
+        mButtonFehu!!.setOnTouchListener(touchListener)
+        mButtonUr!!.setOnTouchListener(touchListener)
+        mButtonAnsuz!!.setOnTouchListener(touchListener)
+        mButtonRaido!!.setOnTouchListener(touchListener)
+        mButtonKaun!!.setOnTouchListener(touchListener)
+        mButtonGyfu!!.setOnTouchListener(touchListener)
+        mButtonWynn!!.setOnTouchListener(touchListener)
+        mButtonHaglaz!!.setOnTouchListener(touchListener)
+        mButtonNaudiz!!.setOnTouchListener(touchListener)
+        mButtonIsaz!!.setOnTouchListener(touchListener)
+        mButtonJeran!!.setOnTouchListener(touchListener)
+        mButtonEihwaz!!.setOnTouchListener(touchListener)
+        mButtonPeord!!.setOnTouchListener(touchListener)
+        mButtonAlgiz!!.setOnTouchListener(touchListener)
+        mButtonSigel!!.setOnTouchListener(touchListener)
+        mButtonTiwaz!!.setOnTouchListener(touchListener)
+        mButtonBerkanan!!.setOnTouchListener(touchListener)
+        mButtonEhwaz!!.setOnTouchListener(touchListener)
+        mButtonMannaz!!.setOnTouchListener(touchListener)
+        mButtonLaguz!!.setOnTouchListener(touchListener)
+        mButtonOdal!!.setOnTouchListener(touchListener)
+        mButtonDagaz!!.setOnTouchListener(touchListener)
     }
 
-    override fun onClick(v: View) { // do nothing if the InputConnection has not been set yet
-        if (inputConnection == null) return
+    override fun onClick(v: View) {
         // Delete text or input key value
         // All communication goes through the InputConnection
         if (v.id == R.id.button_delete) {
@@ -145,9 +148,6 @@ class RunicKeyboard(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) 
             }
         } else if (v.id == R.id.button_enter) {
             letterToRuneQuizActivity!!.checkRune()
-        } else {
-            val value = keyValues[v.id]
-            inputConnection!!.commitText(value, 1)
         }
     }
 
@@ -163,5 +163,40 @@ class RunicKeyboard(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) 
 
     init {
         init(context, attrs)
+    }
+
+    private fun showKeyPopup(v: View) {
+        //The view pressed is a button.
+        val button = v as Button
+
+        popupWindow.width = v.width + 20
+        popupWindow.height = v.height + 20
+        val keyboardKey: TextView = popupWindow.contentView.findViewById(R.id.keyboard_key)
+        keyboardKey.text = button.text.toString()
+
+        //get button location to show the popup above it.
+        val keyLocation = IntArray(2)
+        button.getLocationOnScreen(keyLocation)
+        val location = Rect()
+        location.left = keyLocation[0]
+        location.top = keyLocation[1]
+        location.right = location.left + button.width
+        location.bottom = location.top + button.height
+
+        popupWindow.showAtLocation(
+            v,
+            Gravity.NO_GRAVITY,
+            location.left - 10,
+            location.top - button.height - 20
+        )
+    }
+
+    private fun dismissKeyPopupAndCommitText(v: View) {
+        //The view pressed is a button.
+        val button = v as Button
+
+        popupWindow.dismiss()
+        val value = button.text.toString()
+        inputConnection!!.commitText(value, 1)
     }
 }
