@@ -4,18 +4,24 @@ on:
   [push]
 
 jobs:
-  instrumentation_tests:
+  instrumentation_tests_nexus_one:
     runs-on: macos-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Run Instrumentation Tests Nexus One (reactivecircus)
+      - name: Run Instrumentation Tests (reactivecircus)
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
           profile: Nexus One
           script: ./gradlew connectedCheck
+
+  instrumentation_tests_nexus_6:
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
 
       - name: Run Instrumentation Tests Nexus 6 (reactivecircus)
         uses: reactivecircus/android-emulator-runner@v2
