@@ -12,7 +12,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Run Instrumentation Tests Nexus One(reactivecircus)
+      - name: Run Instrumentation Tests Nexus One (reactivecircus)
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: rune_writings_app_debug
-          path: app/build/outputs/apk/debug/rune-writings-app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
 
   build_and_deploy_to_firebase:
     name: Build debug-APK and deploy to Firebase
