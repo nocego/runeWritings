@@ -112,5 +112,3 @@ a
 1.github/workflows/test_and_deploy_to_firebase.yml,3\5\354b8ec6eae011bdc774f3cf3b0fdebb918227a4
 I
 app/firebase/releaseNotes,c\3\c3a1c76d6d18583a24098cb658932c55d74b2e6a
-s
-Capp/src/androidTest/java/ch/nocego/runeWritings/MainActivityTest.kt,6\3\63e903add9090171a8d5c4db2873b629ada95c11

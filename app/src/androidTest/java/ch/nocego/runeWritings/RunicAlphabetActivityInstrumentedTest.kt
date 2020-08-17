@@ -619,7 +619,9 @@ class RunicAlphabetActivityInstrumentedtests {
     @Test
     fun correctLettersStringRowDescriptionTextByDefault() {
         onView(withId(R.id.tabs)).perform(selectTabAtPosition(1))
+        Thread.sleep(500)
         val listViewItemsCanBeScrolledTo = listViewItemsCanBeScrolledTo()
+        Thread.sleep(500)
 
         for (x in 0..listViewItemsCanBeScrolledTo) {
             onView(withId(R.id.runicAlphabetFurtherInformationListView)).check(
