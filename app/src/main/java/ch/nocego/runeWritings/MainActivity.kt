@@ -77,5 +77,6 @@ class MainActivity : AppCompatActivity() {
         transpileTextResourceOnTextView(buttonletterToRuneQuiz, R.string.letterToRuneQuiz)
         transpileTextResourceOnTextView(copyright, R.string.copyright)
         transpileTextResourceOnTextView(transpilationNote, R.string.transpilationNote)
+        transpileTextResourceOnTextView(buttonRuneToLetterQuiz, R.string.runeToLetterQuiz)
     }
 }

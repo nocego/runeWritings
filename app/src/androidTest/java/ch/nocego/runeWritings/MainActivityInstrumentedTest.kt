@@ -188,6 +188,30 @@ class MainActivityInstrumentedtests {
         onView(withId(R.id.transpilationNote)).check(matches(withText(R.string.transpilationNote)))
     }
 
+    @Test
+    fun lettersInButtonLetterToRunesByDefault() {
+        onView(withId(R.id.buttonletterToRuneQuiz)).check(matches(withText(R.string.letterToRuneQuiz)))
+    }
+
+    @Test
+    fun runesInButtonLetterToRunesAfterSwitching() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.letterToRuneQuiz)
+        onView(withId(R.id.buttonletterToRuneQuiz)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun lettersInButtonRunesToLetterByDefault() {
+        onView(withId(R.id.buttonRuneToLetterQuiz)).check(matches(withText(R.string.runeToLetterQuiz)))
+    }
+
+    @Test
+    fun runesInButtonRunesToLetterAfterSwitching() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.runeToLetterQuiz)
+        onView(withId(R.id.buttonRuneToLetterQuiz)).check(matches(withText(runicTranspilation)))
+    }
+
     private fun setDefaultSharedPrefsValues() {
         val sharedPrefs: SharedPreferences =
             targetContext.getSharedPreferences("RUNES_INSTED_OF_LETTERS", Context.MODE_PRIVATE)
