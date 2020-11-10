@@ -128,6 +128,66 @@ class MainActivityInstrumentedtests {
         onView(withId(R.id.useRunesSwitch)).check(matches(isNotChecked()))
     }
 
+    @Test
+    fun lettersInCopyrightByDefault() {
+        onView(withId(R.id.copyright)).check(matches(withText(R.string.copyright)))
+    }
+
+    @Test
+    fun runesInCopyrightAfterSwitching() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.copyright)
+        onView(withId(R.id.copyright)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun copyrightTranspiledToRunesByOnResumeFromRunicAlphabetActivityIfChanged() {
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        val runicTranspilation = getRunicTranspilation(R.string.copyright)
+        onView(withId(R.id.copyright)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun copyrightNotTranspiledToRunesByOnResumeFromRunicAlphabetActivityIfChanged() {
+        moveSwitch()
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        onView(withId(R.id.copyright)).check(matches(withText(R.string.copyright)))
+    }
+
+    @Test
+    fun lettersInTranspilationNoteByDefault() {
+        onView(withId(R.id.transpilationNote)).check(matches(withText(R.string.transpilationNote)))
+    }
+
+    @Test
+    fun runesInTranspilationNoteAfterSwitching() {
+        moveSwitch()
+        val runicTranspilation = getRunicTranspilation(R.string.transpilationNote)
+        onView(withId(R.id.transpilationNote)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun transpilationNoteTranspiledToRunesByOnResumeFromRunicAlphabetActivityIfChanged() {
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        val runicTranspilation = getRunicTranspilation(R.string.transpilationNote)
+        onView(withId(R.id.transpilationNote)).check(matches(withText(runicTranspilation)))
+    }
+
+    @Test
+    fun transpilationNoteNotTranspiledToRunesByOnResumeFromRunicAlphabetActivityIfChanged() {
+        moveSwitch()
+        onView(withId(R.id.buttonRunicAlphabet)).perform(click())
+        moveSwitch()
+        pressBack()
+        onView(withId(R.id.transpilationNote)).check(matches(withText(R.string.transpilationNote)))
+    }
+
     private fun setDefaultSharedPrefsValues() {
         val sharedPrefs: SharedPreferences =
             targetContext.getSharedPreferences("RUNES_INSTED_OF_LETTERS", Context.MODE_PRIVATE)

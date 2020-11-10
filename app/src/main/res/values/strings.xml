@@ -58,4 +58,6 @@
     <string name="best">Best:</string>
     <string name="delete">Delete</string>
     <string name="enter">Enter</string>
+    <string name="copyright">\u00A9 nocego as tribute to JRR Tolkien</string>
+    <string name="transpilationNote">Note that the transpilation from the latin alphabet to runes is partly interpreted by me.</string>
 </resources>

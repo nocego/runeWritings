@@ -58,4 +58,6 @@
     <string name="best">Rekord:</string>
     <string name="delete">Löschen</string>
     <string name="enter">Enter</string>
+    <string name="copyright">\u00A9 nocego als Tribut an JRR Tolkien</string>
+    <string name="transpilationNote">Beachten Sie, dass die Transpilation vom lateinischen Alphabet auf Runen teilweise von mir interpretiert wurde.</string>
 </resources>
