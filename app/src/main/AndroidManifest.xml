@@ -12,6 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".runeToLetterQuiz.RuneToLetterQuizActivity"
+            android:configChanges="orientation"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
+            />
+        <activity
             android:name=".letterToRuneQuiz.LetterToRuneQuizActivity"
             android:configChanges="orientation"
             android:parentActivityName=".MainActivity"

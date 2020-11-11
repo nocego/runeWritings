@@ -61,4 +61,5 @@
     <string name="copyright">\u00A9 nocego als Tribut an JRR Tolkien</string>
     <string name="transpilationNote">Beachten Sie, dass die Transpilation vom lateinischen Alphabet auf Runen teilweise von mir interpretiert wurde.</string>
     <string name="runeToLetterQuiz">Runen \u2192 Buchstaben</string>
+    <string name="correctLettersInARow">Richtige Buchstaben in Folge:</string>
 </resources>

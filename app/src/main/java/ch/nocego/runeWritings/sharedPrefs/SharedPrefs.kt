@@ -28,5 +28,9 @@ class SharedPrefs {
             editor.putInt("bestLetterToRuneQuiz", newBest)
             editor.apply()
         }
+
+        fun getBestRuneToLetterQuiz(): Int {
+            return getSharedPrefs().getInt("bestRuneToLetterQuiz", 0)
+        }
     }
 }

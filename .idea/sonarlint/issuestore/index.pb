@@ -112,3 +112,5 @@ a
 1.github/workflows/test_and_deploy_to_firebase.yml,3\5\354b8ec6eae011bdc774f3cf3b0fdebb918227a4
 I
 app/firebase/releaseNotes,c\3\c3a1c76d6d18583a24098cb658932c55d74b2e6a
+…
+Uapp/src/main/java/ch/nocego/runeWritings/runeToLetterQuiz/RuneToLetterQuizActivity.kt,2\7\2760b6a705d79199e0691863ed2d1365eda8f1dc

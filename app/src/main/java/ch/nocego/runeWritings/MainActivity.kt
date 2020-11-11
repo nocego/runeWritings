@@ -11,6 +11,7 @@ import ch.nocego.runeWritings.contextHolder.ContextHolder
 import ch.nocego.runeWritings.letterToRuneQuiz.LetterToRuneQuizActivity
 import ch.nocego.runeWritings.model.Transpiler.Companion.transpileActionBar
 import ch.nocego.runeWritings.model.Transpiler.Companion.transpileTextResourceOnTextView
+import ch.nocego.runeWritings.runeToLetterQuiz.RuneToLetterQuizActivity
 import ch.nocego.runeWritings.runicAlphabet.RunicAlphabetActivity
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getSharedPrefs
 import ch.nocego.runeWritings.sharedPrefs.SharedPrefs.Companion.getUseRunes
@@ -65,6 +66,11 @@ class MainActivity : AppCompatActivity() {
 
     fun letterToRuneQuizIntent(v: View) {
         val intent = Intent(this, LetterToRuneQuizActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun runeToLetterQuizIntent(v: View) {
+        val intent = Intent(this, RuneToLetterQuizActivity::class.java)
         startActivity(intent)
     }
 
